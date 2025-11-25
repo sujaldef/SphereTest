@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-// We don't need FaRocket anymore as we are using custom SVGs,
-// but keeping the import just in case you use other icons.
-import hero from './../../../assets/hero.png'; // Ensure this path is correct for your project structure
+import { useNavigate } from "react-router-dom";
+
+import hero from './../../../assets/hero.png'; // Ensure this path is correct
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -15,6 +15,7 @@ const fadeUp = {
 };
 
 export default function Hero() {
+  const navigate = useNavigate();
   return (
     <section className="flex items-center bg-[#FFFDF0] min-h-[90vh] relative overflow-hidden">
       {/* CSS for the Buttons */}
@@ -23,24 +24,24 @@ export default function Hero() {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 12px;
-          padding: 8px 22px;
+          gap: 8px;              /* Reduced gap */
+          padding: 6px 16px;     /* Reduced padding */
           color: #1a1a1a;
           text-shadow: none;
           text-transform: uppercase;
           cursor: pointer;
-          border: solid 3px #1a1a1a;
+          border: solid 2px #1a1a1a; /* Thinner border */
           letter-spacing: 1px;
           font-weight: 800;
-          font-size: 18px; /* Adjusted for Hero section */
+          font-size: 14px;       /* Reduced font size */
           background-color: #FFFDD0;
-          border-radius: 60px;
+          border-radius: 50px;
           position: relative;
           overflow: hidden;
           transition: all 0.4s ease;
-          box-shadow: 0px 8px 12px -3px rgba(0, 0, 0, 0.15);
-          min-width: 190px;
-          height: 64px;
+          box-shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.15); /* Softer shadow */
+          min-width: 130px;      /* Reduced width */
+          height: 42px;          /* Reduced height */
         }
 
         .uiverse-btn-2x:active {
@@ -50,8 +51,8 @@ export default function Hero() {
         .uiverse-btn-2x svg {
           transition: all 0.45s ease;
           z-index: 2;
-          width: 40px;
-          height: 40px;
+          width: 24px;           /* Reduced icon size */
+          height: 24px;          /* Reduced icon size */
         }
 
         /* Default visible text */
@@ -64,7 +65,7 @@ export default function Hero() {
 
         /* Hover: Move icon and default text out/explode */
         .uiverse-btn-2x:hover svg {
-          transform: scale(2) translate(50%, -10%);
+          transform: scale(1.5) translate(50%, -10%); /* Adjusted scale for smaller button */
           opacity: 0.2;
         }
 
@@ -82,7 +83,7 @@ export default function Hero() {
           transform: translateX(-100%);
           transition: all 0.45s ease;
           z-index: 3;
-          font-size: 18px;
+          font-size: 14px;      /* Matched new font size */
           font-weight: 900;
         }
 
@@ -91,7 +92,7 @@ export default function Hero() {
           transition-delay: 100ms;
         }
         
-        /* Variant for the second button to differentiate slightly if needed */
+        /* Variant for the second button */
         .btn-join {
            background-color: #ffffff;
         }
@@ -122,13 +123,15 @@ export default function Hero() {
             </p>
 
             {/* Side-by-Side Buttons */}
-            <div className="flex flex-wrap gap-6">
+            <div className="flex flex-wrap gap-4"> {/* Reduced gap between buttons */}
               {/* BUTTON 1: CREATE SPHERE */}
               <motion.button
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="uiverse-btn-2x"
+                onClick={() => navigate("/create")}
               >
+
                 {/* Rocket Icon */}
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
                   <path
@@ -170,11 +173,11 @@ export default function Hero() {
 
               {/* BUTTON 2: JOIN SPHERE */}
               <motion.button
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="uiverse-btn-2x btn-join"
+                onClick={() => navigate("/join")}
               >
-                {/* Gamepad Icon for Join */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -195,31 +198,15 @@ export default function Hero() {
                     stroke="black"
                     strokeWidth="2"
                   ></rect>
-                  <path
-                    d="M6 12h4m-2-2v4"
-                    stroke="black"
-                    strokeWidth="2"
-                  ></path>
-                  <line
-                    x1="15"
-                    y1="11"
-                    x2="15.01"
-                    y2="11"
-                    stroke="black"
-                    strokeWidth="3"
-                  ></line>
-                  <line
-                    x1="18"
-                    y1="13"
-                    x2="18.01"
-                    y2="13"
-                    stroke="black"
-                    strokeWidth="3"
-                  ></line>
+                  <path d="M6 12h4m-2-2v4" stroke="black" strokeWidth="2"></path>
+                  <line x1="15" y1="11" x2="15.01" y2="11" stroke="black" strokeWidth="3"></line>
+                  <line x1="18" y1="13" x2="18.01" y2="13" stroke="black" strokeWidth="3"></line>
                 </svg>
+
                 <span className="now-text text-stone-800">Enter!</span>
                 <span className="play-text">Join</span>
               </motion.button>
+
             </div>
           </motion.div>
 
@@ -234,7 +221,6 @@ export default function Hero() {
               src={hero}
               alt="Hero Visual"
               className="w-full max-w-lg h-auto pt-5 object-contain rounded-3xl"
-              // Fallback image in case the local asset isn't found
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src =

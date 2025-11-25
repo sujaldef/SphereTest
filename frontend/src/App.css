@@ -40,3 +40,24 @@
 .read-the-docs {
   color: #888;
 }
+/* Width */
+::-webkit-scrollbar {
+  width: 14px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #000000; /* Solid black track for high contrast */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #FFE600; /* That bright yellow from your buttons */
+  border: 2px solid #000000;
+  border-radius: 0px; /* Square edges for that retro pixel feel */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #ffffff; /* Turns white on hover */
+}
