@@ -87,7 +87,7 @@ export default function HowItWorks() {
                 scrub: 1,
                 containerAnimation: horizontalScroll,
               },
-            }
+            },
           );
         });
       }, sectionRef);
@@ -102,12 +102,12 @@ export default function HowItWorks() {
   return (
     <section
       ref={sectionRef}
-      className="relative  bg-[#FBF9F1] text-black overflow-hidden font-sans"
+      className="relative  bg-[#FFFDF0] text-black overflow-hidden font-sans"
     >
       {/* DESKTOP View */}
       <div className="hidden md:block">
         {/* Sidebar Title */}
-        <div className="fixed top-0 left-0 h-screen w-[35%] lg:w-[40%] flex items-center justify-center bg-[#FBF9F1] z-[10]">
+        <div className="fixed top-0 left-0 h-screen w-[35%] lg:w-[40%] flex items-center justify-center bg-[#FFFDF0] z-[10]">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -121,8 +121,8 @@ export default function HowItWorks() {
               <span className="text-gray-500">Works</span>
             </h1>
             <p className="text-lg text-gray-600 mt-6">
-              From creation to analysis, our process is seamless, real-time,
-              and built for engagement.
+              From creation to analysis, our process is seamless, real-time, and
+              built for engagement.
             </p>
           </motion.div>
         </div>
@@ -134,28 +134,27 @@ export default function HowItWorks() {
             <div className="h-[2px] bg-gray-300 w-full"></div>
 
             {/* Gradient Star (SVG) */}
-            <div className="absolute z-[100] transform -translate-x-1/2 bg-[#FBF9F1] px-2">
-             <svg
-  width="100"
-  height="60"
-  viewBox="0 0 4 24"
-  fill="none"
-  xmlns="http://www.w3.org/2000/svg"
->
-  <path
-    d="M12 2L12 22M2 12L22 12M4.93 4.93L19.07 19.07M4.93 19.07L19.07 4.93"
-    stroke="url(#grad)"
-    strokeWidth="1.2"  // thinner stroke
-  />
-  <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stopColor="#FF69B4" stopOpacity="1" />
-      <stop offset="50%" stopColor="#00CED1" stopOpacity="1" />
-      <stop offset="100%" stopColor="#FF00FF" stopOpacity="1" />
-    </linearGradient>
-  </defs>
-</svg>
-
+            <div className="absolute z-[100] transform -translate-x-1/2 bg-[#FFFDF0] px-2">
+              <svg
+                width="100"
+                height="60"
+                viewBox="0 0 4 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 2L12 22M2 12L22 12M4.93 4.93L19.07 19.07M4.93 19.07L19.07 4.93"
+                  stroke="url(#grad)"
+                  strokeWidth="1.2" // thinner stroke
+                />
+                <defs>
+                  <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FF69B4" stopOpacity="1" />
+                    <stop offset="50%" stopColor="#00CED1" stopOpacity="1" />
+                    <stop offset="100%" stopColor="#FF00FF" stopOpacity="1" />
+                  </linearGradient>
+                </defs>
+              </svg>
             </div>
           </div>
 
@@ -191,7 +190,7 @@ export default function HowItWorks() {
       </div>
 
       {/* MOBILE View */}
-      <div className="block md:hidden container mx-auto px-6 py-24 bg-[#FBF9F1]">
+      <div className="block md:hidden container mx-auto px-6 py-24 bg-[#FFFDF0]">
         <h2 className="text-5xl font-bold text-center mb-4">How It</h2>
         <h2 className="text-5xl font-bold text-center text-gray-500 mb-12">
           Works
