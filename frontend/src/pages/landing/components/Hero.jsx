@@ -124,7 +124,7 @@ export default function Hero() {
 
             {/* Side-by-Side Buttons */}
             <div className="flex flex-wrap gap-4"> {/* Reduced gap between buttons */}
-              {/* BUTTON 1: CREATE SPHERE */}
+              {/* BUTTON 1: CREATE SPHERE here */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
