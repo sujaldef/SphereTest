@@ -10,10 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18]
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -21,17 +17,14 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+        node-version: 18
 
-    # =========================
     # FRONTEND
-    # =========================
     - name: Install frontend dependencies
       working-directory: ./frontend
       run: npm install
 
-    - name: Run frontend lint
+    - name: Lint frontend
       working-directory: ./frontend
       run: npm run lint
 
@@ -39,14 +32,11 @@ jobs:
       working-directory: ./frontend
       run: npm run build
 
-    # =========================
     # BACKEND
-    # =========================
     - name: Install backend dependencies
       working-directory: ./backend
       run: npm install
 
-    - name: Check backend start
+    - name: Check backend syntax
       working-directory: ./backend
-      run: |
-        node -e "require('./src/index.js')" || echo "Backend check passed"
+      run: node -e "require('./src/server.js')"

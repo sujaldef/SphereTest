@@ -11,7 +11,7 @@ export default function JoinSphere() {
   const [gameCode, setGameCode] = useState('');
   const [isLinkJoin] = useState(false); // Simulates joining via link
 
-  // Mock function to simulate "Link Join" detection
+  // Mock function  to simulate "Link Join" detection
   useEffect(() => {
     // In a real app, you'd check URL params here
     const timer = setTimeout(() => {
