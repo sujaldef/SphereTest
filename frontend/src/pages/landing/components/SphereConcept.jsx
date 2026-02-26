@@ -1,6 +1,6 @@
-import React from 'react';
+
 import { motion } from 'framer-motion';
-import { FaRocket } from 'react-icons/fa';
+
 import { BsCheckCircle } from 'react-icons/bs';
 
 // --- ANIMATION VARIANTS ---

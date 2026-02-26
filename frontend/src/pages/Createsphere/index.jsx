@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Terminal, ListChecks, Shuffle, Clock, Users, 
-  Trophy, ArrowRight, ArrowLeft, Calendar, ShieldAlert, 
-  Eye, Play, Check, Sparkles, Zap, BrainCircuit
+  Trophy, ArrowRight, ArrowLeft, ShieldAlert, 
+  Eye,  Sparkles, Zap, BrainCircuit
 } from 'lucide-react';
 
 export default function CreateSphereFixed() {

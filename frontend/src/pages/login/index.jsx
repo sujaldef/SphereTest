@@ -9,11 +9,7 @@ import {
   Phone,
   Lock,
   ArrowRight,
-  ArrowLeft,
-  Gamepad2,
-  Joystick,
-  Sword,
-  Trophy,
+  ArrowLeft
 } from 'lucide-react';
 
 export default function AuthPage() {

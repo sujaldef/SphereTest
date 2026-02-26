@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Gamepad2, Joystick, Sword, Trophy, ArrowRight, Hash, 
+   ArrowRight, Hash, 
   User, Camera, Sparkles, Link as LinkIcon, AlertCircle, Mail 
 } from 'lucide-react';
 
@@ -9,14 +9,14 @@ export default function JoinSphere() {
   // State for the flow: 'code' -> 'register' -> 'ready'
   const [step, setStep] = useState('code'); 
   const [gameCode, setGameCode] = useState('');
-  const [isLinkJoin, setIsLinkJoin] = useState(false); // Simulates joining via link
+  const [isLinkJoin] = useState(false); // Simulates joining via link
 
   // Mock function to simulate "Link Join" detection
   useEffect(() => {
     // In a real app, you'd check URL params here
     const timer = setTimeout(() => {
       // Just for demo purposes, showing a "Link Detected" toast occasionally
-      // setIsLinkJoin(true); 
+      
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
