@@ -6,8 +6,11 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
   globalIgnores(['dist']),
+
+  // React Frontend Files
   {
     files: ['**/*.{js,jsx}'],
+    ignores: ['tailwind.config.js'],
     extends: [
       js.configs.recommended,
       reactHooks.configs['recommended-latest'],
@@ -24,6 +27,14 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['warn', { varsIgnorePattern: '^[A-Z_]' }],
+    },
+  },
+
+  // Node Config Files (Tailwind etc.)
+  {
+    files: ['tailwind.config.js'],
+    languageOptions: {
+      globals: globals.node,
     },
   },
 ])
