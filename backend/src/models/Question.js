@@ -7,24 +7,39 @@ const questionSchema = new mongoose.Schema(
       ref: 'Sphere',
       required: true,
     },
+    type: {
+      type: String,
+      enum: ['MCQ', 'CODE', 'TEXT', 'BOOL'],
+      required: true,
+      default: 'MCQ',
+    },
     questionText: {
       type: String,
       required: true,
       trim: true,
     },
+    // For MCQ: array of option strings
     options: [
       {
         type: String,
-        required: true,
         trim: true,
       },
     ],
-    // Store the correct answer as the exact option string.
-    // In the future you could switch this to an index if needed.
+    // For MCQ: index of correct option, or string matching option
+    // For CODE: expected output or test cases
+    // For TEXT: expected answer string
+    // For BOOL: true/false
     correctAnswer: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       required: true,
-      trim: true,
+    },
+    // For CODE questions
+    codeLanguage: {
+      type: String,
+      enum: ['javascript', 'python', 'cpp'],
+    },
+    starterCode: {
+      type: String,
     },
   },
   {

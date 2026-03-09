@@ -2,15 +2,15 @@
   "info": {
     "name": "SphereTest API",
     "_postman_id": "b9c0e3a4-5d6f-4d2b-9f11-123456789abc",
-    "description": "Postman collection for SphereTest backend (users, spheres, questions).",
+    "description": "Complete Postman collection for SphereTest backend with authentication, spheres, and questions.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Users",
+      "name": "Authentication",
       "item": [
         {
-          "name": "Create User",
+          "name": "Register",
           "request": {
             "method": "POST",
             "header": [
@@ -22,7 +22,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@spheretest.com\",\n  \"role\": \"admin\"\n}",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+1234567890\",\n  \"role\": \"admin\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -30,7 +30,7 @@
               }
             },
             "url": {
-              "raw": "http://localhost:5000/api/users",
+              "raw": "http://localhost:5000/api/auth/register",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -38,52 +38,78 @@
               "port": "5000",
               "path": [
                 "api",
-                "users"
+                "auth",
+                "register"
               ]
             }
-          },
-          "response": [
-            {
-              "name": "201 Created",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json",
-                    "type": "text"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@spheretest.com\",\n  \"role\": \"admin\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "http://localhost:5000/api/users",
-                  "protocol": "http",
-                  "host": [
-                    "localhost"
-                  ],
-                  "port": "5000",
-                  "path": [
-                    "api",
-                    "users"
-                  ]
-                }
-              },
-              "status": "Created",
-              "code": 201,
-              "_postman_previewlanguage": "json",
-              "header": [],
-              "body": "{\n  \"_id\": \"60f6f0a2c0e4b010a8d5c001\",\n  \"name\": \"Admin User\",\n  \"email\": \"admin@spheretest.com\",\n  \"role\": \"admin\",\n  \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n  \"updatedAt\": \"2024-01-01T00:00:00.000Z\",\n  \"__v\": 0\n}"
-            }
-          ]
+          }
         },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@spheretest.com\",\n  \"password\": \"admin123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5000/api/auth/me",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
         {
           "name": "Get Users",
           "request": {
@@ -101,33 +127,7 @@
                 "users"
               ]
             }
-          },
-          "response": [
-            {
-              "name": "200 OK",
-              "originalRequest": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "http://localhost:5000/api/users",
-                  "protocol": "http",
-                  "host": [
-                    "localhost"
-                  ],
-                  "port": "5000",
-                  "path": [
-                    "api",
-                    "users"
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [],
-              "body": "[\n  {\n    \"_id\": \"60f6f0a2c0e4b010a8d5c001\",\n    \"name\": \"Admin User\",\n    \"email\": \"admin@spheretest.com\",\n    \"role\": \"admin\",\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T00:00:00.000Z\",\n    \"__v\": 0\n  }\n]"
-            }
-          ]
+          }
         }
       ]
     },
@@ -143,11 +143,16 @@
                 "key": "Content-Type",
                 "value": "application/json",
                 "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"Sample Sphere\",\n  \"description\": \"Demo sphere for testing\",\n  \"createdBy\": \"<ADMIN_USER_ID>\",\n  \"participants\": [\"<ADMIN_USER_ID>\", \"<STUDENT_USER_ID_1>\", \"<STUDENT_USER_ID_2>\"]\n}",
+              "raw": "{\n  \"title\": \"Sample Sphere\",\n  \"description\": \"Demo sphere for testing\",\n  \"type\": \"mcq\",\n  \"duration\": 60,\n  \"maxPlayers\": 50,\n  \"difficulty\": \"medium\",\n  \"security\": {\n    \"faceId\": true,\n    \"fullscreen\": false,\n    \"tabSwitchDetection\": true\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -166,51 +171,10 @@
                 "spheres"
               ]
             }
-          },
-          "response": [
-            {
-              "name": "201 Created",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json",
-                    "type": "text"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"title\": \"Sample Sphere\",\n  \"description\": \"Demo sphere for testing\",\n  \"createdBy\": \"<ADMIN_USER_ID>\",\n  \"participants\": [\"<ADMIN_USER_ID>\", \"<STUDENT_USER_ID_1>\", \"<STUDENT_USER_ID_2>\"]\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "http://localhost:5000/api/spheres",
-                  "protocol": "http",
-                  "host": [
-                    "localhost"
-                  ],
-                  "port": "5000",
-                  "path": [
-                    "api",
-                    "spheres"
-                  ]
-                }
-              },
-              "status": "Created",
-              "code": 201,
-              "_postman_previewlanguage": "json",
-              "header": [],
-              "body": "{\n  \"_id\": \"60f6f0a2c0e4b010a8d5c010\",\n  \"title\": \"Sample Sphere\",\n  \"description\": \"Demo sphere for testing\",\n  \"createdBy\": \"60f6f0a2c0e4b010a8d5c001\",\n  \"participants\": [\n    \"60f6f0a2c0e4b010a8d5c001\",\n    \"60f6f0a2c0e4b010a8d5c002\",\n    \"60f6f0a2c0e4b010a8d5c003\"\n  ],\n  \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n  \"updatedAt\": \"2024-01-01T00:00:00.000Z\",\n  \"__v\": 0\n}"
-            }
-          ]
+          }
         },
         {
-          "name": "Get Spheres",
+          "name": "Get All Spheres",
           "request": {
             "method": "GET",
             "header": [],
@@ -226,33 +190,7 @@
                 "spheres"
               ]
             }
-          },
-          "response": [
-            {
-              "name": "200 OK",
-              "originalRequest": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "http://localhost:5000/api/spheres",
-                  "protocol": "http",
-                  "host": [
-                    "localhost"
-                  ],
-                  "port": "5000",
-                  "path": [
-                    "api",
-                    "spheres"
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [],
-              "body": "[\n  {\n    \"_id\": \"60f6f0a2c0e4b010a8d5c010\",\n    \"title\": \"Sample Sphere\",\n    \"description\": \"Demo sphere for testing\",\n    \"createdBy\": \"60f6f0a2c0e4b010a8d5c001\",\n    \"participants\": [\n      \"60f6f0a2c0e4b010a8d5c001\",\n      \"60f6f0a2c0e4b010a8d5c002\",\n      \"60f6f0a2c0e4b010a8d5c003\"\n    ],\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T00:00:00.000Z\",\n    \"__v\": 0\n  }\n]"
-            }
-          ]
+          }
         },
         {
           "name": "Get Sphere by ID",
@@ -272,14 +210,80 @@
                 "{{sphereId}}"
               ]
             }
-          },
-          "response": []
+          }
+        },
+        {
+          "name": "Get Sphere by Code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/spheres/code/{{gameCode}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "spheres",
+                "code",
+                "{{gameCode}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Join Sphere",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gameCode\": \"{{gameCode}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/spheres/join",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "spheres",
+                "join"
+              ]
+            }
+          }
         },
         {
           "name": "Delete Sphere",
           "request": {
             "method": "DELETE",
-            "header": [],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
             "url": {
               "raw": "http://localhost:5000/api/spheres/{{sphereId}}",
               "protocol": "http",
@@ -293,34 +297,7 @@
                 "{{sphereId}}"
               ]
             }
-          },
-          "response": [
-            {
-              "name": "200 OK",
-              "originalRequest": {
-                "method": "DELETE",
-                "header": [],
-                "url": {
-                  "raw": "http://localhost:5000/api/spheres/{{sphereId}}",
-                  "protocol": "http",
-                  "host": [
-                    "localhost"
-                  ],
-                  "port": "5000",
-                  "path": [
-                    "api",
-                    "spheres",
-                    "{{sphereId}}"
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [],
-              "body": "{\n  \"message\": \"Sphere deleted successfully\"\n}"
-            }
-          ]
+          }
         }
       ]
     },
@@ -328,7 +305,7 @@
       "name": "Questions",
       "item": [
         {
-          "name": "Create Question",
+          "name": "Create MCQ Question",
           "request": {
             "method": "POST",
             "header": [
@@ -336,11 +313,16 @@
                 "key": "Content-Type",
                 "value": "application/json",
                 "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"sphereId\": \"{{sphereId}}\",\n  \"questionText\": \"What is 2 + 2?\",\n  \"options\": [\"1\", \"2\", \"3\", \"4\"],\n  \"correctAnswer\": \"4\"\n}",
+              "raw": "{\n  \"sphereId\": \"{{sphereId}}\",\n  \"type\": \"MCQ\",\n  \"questionText\": \"What is 2 + 2?\",\n  \"options\": [\n    \"1\",\n    \"2\",\n    \"3\",\n    \"4\"\n  ],\n  \"correctAnswer\": \"4\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -359,48 +341,124 @@
                 "questions"
               ]
             }
-          },
-          "response": [
-            {
-              "name": "201 Created",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json",
-                    "type": "text"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"sphereId\": \"{{sphereId}}\",\n  \"questionText\": \"What is 2 + 2?\",\n  \"options\": [\"1\", \"2\", \"3\", \"4\"],\n  \"correctAnswer\": \"4\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "http://localhost:5000/api/questions",
-                  "protocol": "http",
-                  "host": [
-                    "localhost"
-                  ],
-                  "port": "5000",
-                  "path": [
-                    "api",
-                    "questions"
-                  ]
-                }
+          }
+        },
+        {
+          "name": "Create CODE Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
               },
-              "status": "Created",
-              "code": 201,
-              "_postman_previewlanguage": "json",
-              "header": [],
-              "body": "{\n  \"_id\": \"60f6f0a2c0e4b010a8d5c020\",\n  \"sphereId\": \"60f6f0a2c0e4b010a8d5c010\",\n  \"questionText\": \"What is 2 + 2?\",\n  \"options\": [\"1\", \"2\", \"3\", \"4\"],\n  \"correctAnswer\": \"4\",\n  \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n  \"updatedAt\": \"2024-01-01T00:00:00.000Z\",\n  \"__v\": 0\n}"
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sphereId\": \"{{sphereId}}\",\n  \"type\": \"CODE\",\n  \"questionText\": \"Write a function that returns the sum of two numbers\",\n  \"codeLanguage\": \"javascript\",\n  \"starterCode\": \"function add(a, b) {\\n  // Write your code here\\n}\",\n  \"correctAnswer\": \"function add(a, b) { return a + b; }\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/questions",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "questions"
+              ]
             }
-          ]
+          }
+        },
+        {
+          "name": "Create TEXT Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sphereId\": \"{{sphereId}}\",\n  \"type\": \"TEXT\",\n  \"questionText\": \"Explain what is JavaScript?\",\n  \"correctAnswer\": \"JavaScript is a programming language used for web development\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/questions",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "questions"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create BOOL Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sphereId\": \"{{sphereId}}\",\n  \"type\": \"BOOL\",\n  \"questionText\": \"JavaScript is a compiled language.\",\n  \"correctAnswer\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/questions",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "questions"
+              ]
+            }
+          }
         },
         {
           "name": "Get Questions by Sphere",
@@ -420,43 +478,93 @@
                 "{{sphereId}}"
               ]
             }
-          },
-          "response": [
-            {
-              "name": "200 OK",
-              "originalRequest": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "http://localhost:5000/api/questions/{{sphereId}}",
-                  "protocol": "http",
-                  "host": [
-                    "localhost"
-                  ],
-                  "port": "5000",
-                  "path": [
-                    "api",
-                    "questions",
-                    "{{sphereId}}"
-                  ]
-                }
+          }
+        },
+        {
+          "name": "Update Question",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
               },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [],
-              "body": "[\n  {\n    \"_id\": \"60f6f0a2c0e4b010a8d5c020\",\n    \"sphereId\": \"60f6f0a2c0e4b010a8d5c010\",\n    \"questionText\": \"What is 2 + 2?\",\n    \"options\": [\"1\", \"2\", \"3\", \"4\"],\n    \"correctAnswer\": \"4\",\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T00:00:00.000Z\",\n    \"__v\": 0\n  }\n]"
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"questionText\": \"Updated question text\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/questions/{{questionId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "questions",
+                "{{questionId}}"
+              ]
             }
-          ]
+          }
+        },
+        {
+          "name": "Delete Question",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5000/api/questions/{{questionId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "questions",
+                "{{questionId}}"
+              ]
+            }
+          }
         }
       ]
     }
   ],
   "variable": [
     {
+      "key": "token",
+      "value": ""
+    },
+    {
       "key": "sphereId",
-      "value": "REPLACE_WITH_SPHERE_ID_FROM_SEED_OR_API"
+      "value": ""
+    },
+    {
+      "key": "gameCode",
+      "value": ""
+    },
+    {
+      "key": "questionId",
+      "value": ""
     }
   ]
 }
-
