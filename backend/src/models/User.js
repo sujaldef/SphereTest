@@ -30,6 +30,23 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: 'student',
     },
+    badge: {
+      type: String,
+      enum: ['Gold', 'Silver', 'Bronze'],
+    },
+    avgScore: {
+      type: Number,
+      min: 0,
+      max: 100,
+    },
+    spheresCount: {
+      type: Number,
+      default: 0,
+    },
+    isOnline: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

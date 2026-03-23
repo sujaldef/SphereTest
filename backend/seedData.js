@@ -40,6 +40,10 @@ const seed = async () => {
       password: 'admin123',
       phone: '+1234567890',
       role: 'admin',
+      badge: 'Gold',
+      avgScore: 88,
+      spheresCount: 1,
+      isOnline: true,
     });
 
     const student1 = await User.create({
@@ -48,6 +52,10 @@ const seed = async () => {
       password: 'student123',
       phone: '+1234567891',
       role: 'student',
+      badge: 'Gold',
+      avgScore: 84,
+      spheresCount: 1,
+      isOnline: true,
     });
 
     const student2 = await User.create({
@@ -56,6 +64,10 @@ const seed = async () => {
       password: 'student123',
       phone: '+1234567892',
       role: 'student',
+      badge: 'Silver',
+      avgScore: 72,
+      spheresCount: 1,
+      isOnline: false,
     });
 
     console.log('🌀 Creating sphere...');
@@ -68,6 +80,8 @@ const seed = async () => {
       duration: 60,
       maxPlayers: 50,
       difficulty: 'medium',
+      status: 'Active',
+      avgScore: 76,
       security: {
         faceId: true,
         fullscreen: false,

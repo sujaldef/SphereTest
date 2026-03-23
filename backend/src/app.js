@@ -5,6 +5,7 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const sphereRoutes = require('./routes/sphereRoutes');
 const questionRoutes = require('./routes/questionRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 const { notFound, errorHandler } = require('./utils/errorHandler');
 
 const app = express();
@@ -31,6 +32,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/spheres', sphereRoutes);
 app.use('/api/questions', questionRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // 404 + global error handlers
 app.use(notFound);
