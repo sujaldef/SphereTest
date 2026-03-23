@@ -49,6 +49,16 @@ const sphereSchema = new mongoose.Schema(
       enum: ['easy', 'medium', 'hard'],
       default: 'medium',
     },
+    status: {
+      type: String,
+      enum: ['Active', 'Completed', 'Draft'],
+      default: 'Active',
+    },
+    avgScore: {
+      type: Number,
+      min: 0,
+      max: 100,
+    },
     security: {
       faceId: {
         type: Boolean,

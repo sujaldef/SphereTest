@@ -1,36 +1,46 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-   ArrowRight, Hash, 
-  User, Camera, Sparkles, Link as LinkIcon, AlertCircle, Mail 
+import {
+  ArrowRight, Hash,
+  User, Camera, Sparkles, Link as LinkIcon, AlertCircle, Mail
 } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { fetchSphereByCodeThunk } from '../../features/spheres/sphereSlice';
+import { selectSpheres } from '../../store/store';
 
 export default function JoinSphere() {
   // State for the flow: 'code' -> 'register' -> 'ready'
-  const [step, setStep] = useState('code'); 
+  const [step, setStep] = useState('code');
   const [gameCode, setGameCode] = useState('');
   const [isLinkJoin] = useState(false); // Simulates joining via link
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const spheres = useSelector(selectSpheres);
 
   // Mock function  to simulate "Link Join" detection
   useEffect(() => {
     // In a real app, you'd check URL params here
     const timer = setTimeout(() => {
       // Just for demo purposes, showing a "Link Detected" toast occasionally
-      
+
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  const handleCodeSubmit = (e) => {
+  const handleCodeSubmit = async (e) => {
     e.preventDefault();
-    if (gameCode.length >= 6) {
+    if (gameCode.length < 3) return;
+
+    const resultAction = await dispatch(fetchSphereByCodeThunk(gameCode));
+    if (fetchSphereByCodeThunk.fulfilled.match(resultAction)) {
       setStep('register');
     }
   };
 
   return (
     <div className="min-h-screen bg-[#FFFDF0] flex items-center justify-center p-4 relative overflow-hidden font-sans">
-      
+
       {/* --- SHARED THEME STYLES (Reused for consistency) --- */}
       <style>{`
         .gamified-bg {
@@ -76,11 +86,11 @@ export default function JoinSphere() {
 
       {/* Background Layers */}
       <div className="absolute inset-0 gamified-bg pointer-events-none z-0"></div>
-      
-    
+
+
       {/* --- MAIN CARD --- */}
       <div className="w-full max-w-md bg-white rounded-[2rem] shadow-2xl overflow-hidden relative z-10 border-4 border-stone-900">
-        
+
         {/* Card Header (Game Cartridge Style) */}
         <div className="bg-stone-900 p-6 text-center border-b-4 border-yellow-400 relative">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-2 bg-stone-800 rounded-b-lg"></div>
@@ -93,7 +103,7 @@ export default function JoinSphere() {
         {/* Dynamic Content Area */}
         <div className="p-8 min-h-[400px] flex flex-col">
           <AnimatePresence mode="wait">
-            
+
             {/* STEP 1: ENTER CODE */}
             {step === 'code' && (
               <motion.div
@@ -105,10 +115,10 @@ export default function JoinSphere() {
               >
                 {/* Link Detected Toast (Simulation) */}
                 {isLinkJoin && (
-                   <div className="bg-blue-50 border-2 border-blue-200 text-blue-800 p-3 rounded-xl flex items-center gap-3 text-sm font-bold animate-pulse">
-                     <LinkIcon size={16} />
-                     <span>Invite Link Detected: Sphere #8821</span>
-                   </div>
+                  <div className="bg-blue-50 border-2 border-blue-200 text-blue-800 p-3 rounded-xl flex items-center gap-3 text-sm font-bold animate-pulse">
+                    <LinkIcon size={16} />
+                    <span>Invite Link Detected: Sphere #8821</span>
+                  </div>
                 )}
 
                 <div className="text-center space-y-2">
@@ -121,8 +131,8 @@ export default function JoinSphere() {
 
                 <form onSubmit={handleCodeSubmit} className="space-y-6">
                   <div className="relative">
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={gameCode}
                       onChange={(e) => setGameCode(e.target.value.toUpperCase())}
                       placeholder="ABC-123"
@@ -131,13 +141,19 @@ export default function JoinSphere() {
                     />
                   </div>
 
-                  <RetroButton 
-                    text="CONNECT" 
-                    fullWidth 
-                    icon={ArrowRight} 
-                    disabled={gameCode.length < 3} // Reduced for demo
+                  <RetroButton
+                    text={spheres.status === 'loading' ? 'CONNECTING...' : 'CONNECT'}
+                    fullWidth
+                    icon={ArrowRight}
+                    disabled={gameCode.length < 3 || spheres.status === 'loading'}
                   />
                 </form>
+
+                {spheres.error && (
+                  <p className="text-sm text-red-600 font-medium text-center">
+                    {spheres.error}
+                  </p>
+                )}
 
                 <div className="text-center">
                   <span className="text-xs font-bold text-stone-400 uppercase">Or scan QR Code</span>
@@ -155,13 +171,13 @@ export default function JoinSphere() {
                 className="flex-1 flex flex-col space-y-6"
               >
                 <div className="flex items-center gap-2 text-stone-400 text-xs font-bold uppercase tracking-wider cursor-pointer hover:text-stone-900" onClick={() => setStep('code')}>
-                   <ArrowRight className="rotate-180" size={14} /> Back to Code
+                  <ArrowRight className="rotate-180" size={14} /> Back to Code
                 </div>
 
                 <div className="text-center">
                   <h2 className="text-2xl font-black text-stone-900">AI Registration</h2>
                   <p className="text-stone-500 text-sm mt-1">
-                    This sphere uses <span className="font-bold text-stone-900">ML Monitoring</span>. 
+                    This sphere uses <span className="font-bold text-stone-900">ML Monitoring</span>.
                     Please create an account and scan your face to proceed.
                   </p>
                 </div>
@@ -169,13 +185,13 @@ export default function JoinSphere() {
                 {/* Face ID Scan Spot */}
                 <div className="flex justify-center">
                   <div className="w-32 h-32 bg-stone-100 rounded-2xl border-4 border-dashed border-stone-300 flex flex-col items-center justify-center text-stone-400 cursor-pointer hover:border-yellow-400 hover:text-yellow-600 hover:bg-yellow-50 transition-all relative group overflow-hidden shadow-inner">
-                    
+
                     {/* Scanning Animation */}
                     <div className="absolute inset-x-0 h-1 bg-yellow-400 shadow-[0_0_10px_2px_rgba(250,204,21,0.5)] top-0 opacity-0 group-hover:opacity-100 group-hover:animate-[scan_1.5s_linear_infinite]"></div>
 
                     <Camera size={32} className="relative z-10" />
-                    <span className="text-[10px] font-bold uppercase mt-2 text-center leading-tight px-2 relative z-10">Scan Face<br/>for AI Model</span>
-                    
+                    <span className="text-[10px] font-bold uppercase mt-2 text-center leading-tight px-2 relative z-10">Scan Face<br />for AI Model</span>
+
                     {/* "Required" Badge */}
                     <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse z-10"></div>
                   </div>
@@ -184,20 +200,20 @@ export default function JoinSphere() {
                 <div className="space-y-3">
                   <GamifiedInput icon={User} placeholder="Full Name" autoFocus />
                   <GamifiedInput icon={Mail} placeholder="Email Address" type="email" />
-                  
+
                   <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-xl flex gap-3 items-start">
-                     <AlertCircle className="text-yellow-600 shrink-0" size={18} />
-                     <p className="text-xs text-yellow-800 font-medium leading-relaxed">
-                       Your face data is required to train the monitoring model for this session.
-                     </p>
+                    <AlertCircle className="text-yellow-600 shrink-0" size={18} />
+                    <p className="text-xs text-yellow-800 font-medium leading-relaxed">
+                      Your face data is required to train the monitoring model for this session.
+                    </p>
                   </div>
                 </div>
 
                 <div className="pt-2">
-                  <RetroButton 
-                    text="CREATE & JOIN" 
-                    fullWidth 
-                    icon={Sparkles} 
+                  <RetroButton
+                    text="CREATE & JOIN"
+                    fullWidth
+                    icon={Sparkles}
                     onClick={() => alert("Launching Camera for Registration...")}
                   />
                 </div>
@@ -228,7 +244,7 @@ function GamifiedInput({ icon: Icon, ...props }) {
       <div className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-yellow-500 transition-colors">
         <Icon size={20} />
       </div>
-      <input 
+      <input
         {...props}
         className="w-full bg-white border-2 border-stone-200 rounded-xl py-3 pl-12 pr-4 text-stone-900 font-medium placeholder-stone-400 focus:outline-none focus:border-stone-900 focus:ring-4 focus:ring-yellow-400/20 transition-all"
       />
@@ -238,7 +254,7 @@ function GamifiedInput({ icon: Icon, ...props }) {
 
 function RetroButton({ text, onClick, fullWidth, icon: Icon, disabled }) {
   return (
-    <button 
+    <button
       onClick={onClick}
       disabled={disabled}
       className={`

@@ -11,9 +11,45 @@ import {
   ArrowRight,
   ArrowLeft
 } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { loginThunk, registerThunk, clearAuthError } from '../../features/auth/authSlice';
+import { selectAuth } from '../../store/store';
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(false); // Default to Sign Up as per request focus
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const auth = useSelector(selectAuth);
+
+  // If user is already authenticated (has JWT), send them directly to dashboard
+  React.useEffect(() => {
+    if (auth?.token) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [auth?.token, navigate]);
+
+  const handleLogin = async (credentials) => {
+    try {
+      const resultAction = await dispatch(loginThunk(credentials));
+      if (loginThunk.fulfilled.match(resultAction)) {
+        navigate('/dashboard');
+      }
+    } catch {
+      // error already handled in slice
+    }
+  };
+
+  const handleRegister = async (payload) => {
+    try {
+      const resultAction = await dispatch(registerThunk(payload));
+      if (registerThunk.fulfilled.match(resultAction)) {
+        navigate('/dashboard');
+      }
+    } catch {
+      // error already handled in slice
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#FFFDF0] flex items-center justify-center p-4 relative overflow-hidden font-sans">
@@ -82,9 +118,8 @@ export default function AuthPage() {
       <div className="w-full max-w-5xl h-[650px] bg-white rounded-[2rem] shadow-2xl overflow-hidden flex relative z-10 border-4 border-stone-900">
         {/* Left Side: Graphic / Info Area */}
         <div
-          className={`hidden md:flex w-1/2 bg-stone-900 text-[#FBF9F1] flex-col justify-between p-12 transition-all duration-500 ease-in-out ${
-            isLogin ? 'order-2' : 'order-1'
-          }`}
+          className={`hidden md:flex w-1/2 bg-stone-900 text-[#FBF9F1] flex-col justify-between p-12 transition-all duration-500 ease-in-out ${isLogin ? 'order-2' : 'order-1'
+            }`}
         >
           <div>
             <div className="text-3xl font-black tracking-tighter mb-4">
@@ -117,30 +152,27 @@ export default function AuthPage() {
 
         {/* Right Side: Forms */}
         <div
-          className={`w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-[#FFFDD0]/30 transition-all duration-500 ${
-            isLogin ? 'order-1' : 'order-2'
-          }`}
+          className={`w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-[#FFFDD0]/30 transition-all duration-500 ${isLogin ? 'order-1' : 'order-2'
+            }`}
         >
           {/* Header Switcher */}
           <div className="flex justify-end mb-8">
             <div className="bg-stone-200 p-1 rounded-full inline-flex">
               <button
                 onClick={() => setIsLogin(true)}
-                className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${
-                  isLogin
-                    ? 'bg-stone-900 text-white shadow-lg'
-                    : 'text-stone-600 hover:text-stone-900'
-                }`}
+                className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${isLogin
+                  ? 'bg-stone-900 text-white shadow-lg'
+                  : 'text-stone-600 hover:text-stone-900'
+                  }`}
               >
                 LOGIN
               </button>
               <button
                 onClick={() => setIsLogin(false)}
-                className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${
-                  !isLogin
-                    ? 'bg-stone-900 text-white shadow-lg'
-                    : 'text-stone-600 hover:text-stone-900'
-                }`}
+                className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${!isLogin
+                  ? 'bg-stone-900 text-white shadow-lg'
+                  : 'text-stone-600 hover:text-stone-900'
+                  }`}
               >
                 REGISTER
               </button>
@@ -150,9 +182,21 @@ export default function AuthPage() {
           <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
             <AnimatePresence mode="wait">
               {isLogin ? (
-                <LoginForm key="login" />
+                <LoginForm
+                  key="login"
+                  onSubmit={handleLogin}
+                  authStatus={auth.status}
+                  authError={auth.error}
+                  clearError={() => dispatch(clearAuthError())}
+                />
               ) : (
-                <MultiStepRegister key="register" />
+                <MultiStepRegister
+                  key="register"
+                  onSubmit={handleRegister}
+                  authStatus={auth.status}
+                  authError={auth.error}
+                  clearError={() => dispatch(clearAuthError())}
+                />
               )}
             </AnimatePresence>
           </div>
@@ -164,9 +208,19 @@ export default function AuthPage() {
 
 // --- SUB-COMPONENTS ---
 
-function LoginForm() {
+function LoginForm({ onSubmit, authStatus, authError, clearError }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    clearError();
+    onSubmit({ email, password });
+  };
+
   return (
-    <motion.div
+    <motion.form
+      onSubmit={handleSubmit}
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
@@ -180,8 +234,22 @@ function LoginForm() {
       </div>
 
       <div className="space-y-4">
-        <GamifiedInput icon={Mail} type="email" placeholder="Email Address" />
-        <GamifiedInput icon={Lock} type="password" placeholder="Password" />
+        <GamifiedInput
+          icon={Mail}
+          type="email"
+          placeholder="Email Address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <GamifiedInput
+          icon={Lock}
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
       </div>
 
       <div className="flex items-center justify-between text-sm">
@@ -200,11 +268,18 @@ function LoginForm() {
         </a>
       </div>
 
-      <RetroButton text="ENTER SYSTEM" fullWidth />
+      {authError && (
+        <p className="text-sm text-red-600 font-medium">{authError}</p>
+      )}
+
+      <RetroButton
+        text={authStatus === 'loading' ? 'Signing in...' : 'ENTER SYSTEM'}
+        fullWidth
+      />
 
       <div className="relative py-4">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-stone-300"></span>
+          <span className="w-full border-t border-stone-300" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-[#fbfaf6] px-2 text-stone-400 font-mono">
@@ -216,21 +291,33 @@ function LoginForm() {
       <button className="w-full py-3 border-2 border-stone-200 rounded-xl font-bold text-stone-600 hover:border-stone-900 hover:bg-stone-50 transition-all flex items-center justify-center gap-2">
         <Camera size={20} /> Face Recognition
       </button>
-    </motion.div>
+    </motion.form>
   );
 }
 
-function MultiStepRegister() {
+function MultiStepRegister({ onSubmit, authStatus, authError, clearError }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
+    password: '',
     faceImage: null,
   });
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
+
+  const completeRegistration = () => {
+    clearError();
+    onSubmit({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      password: formData.password,
+      faceImage: formData.faceImage,
+    });
+  };
 
   return (
     <motion.div
@@ -268,13 +355,45 @@ function MultiStepRegister() {
             <p className="text-stone-500">Join the SphereTest network.</p>
           </div>
           <div className="space-y-4">
-            <GamifiedInput icon={User} type="text" placeholder="Full Name" />
+            <GamifiedInput
+              icon={User}
+              type="text"
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, name: e.target.value }))
+              }
+              required
+            />
             <GamifiedInput
               icon={Mail}
               type="email"
               placeholder="Email Address"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, email: e.target.value }))
+              }
+              required
             />
-            <GamifiedInput icon={Phone} type="tel" placeholder="Phone Number" />
+            <GamifiedInput
+              icon={Lock}
+              type="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, password: e.target.value }))
+              }
+              required
+            />
+            <GamifiedInput
+              icon={Phone}
+              type="tel"
+              placeholder="Phone Number"
+              value={formData.phone}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, phone: e.target.value }))
+              }
+            />
           </div>
           <div className="pt-4">
             <RetroButton
@@ -286,13 +405,18 @@ function MultiStepRegister() {
           </div>
         </div>
       ) : (
-        <FaceCaptureStep onBack={prevStep} />
+        <FaceCaptureStep
+          onBack={prevStep}
+          onComplete={completeRegistration}
+          authStatus={authStatus}
+          authError={authError}
+        />
       )}
     </motion.div>
   );
 }
 
-function FaceCaptureStep({ onBack }) {
+function FaceCaptureStep({ onBack, onComplete, authStatus, authError }) {
   const webcamRef = useRef(null);
   const [imgSrc, setImgSrc] = useState(null);
   const [isCapturing, setIsCapturing] = useState(false);
@@ -401,12 +525,20 @@ function FaceCaptureStep({ onBack }) {
             >
               <RefreshCw size={20} /> RETAKE
             </button>
-            <button className="flex-1 bg-yellow-400 text-stone-900 rounded-xl font-bold flex items-center justify-center gap-2 border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[2px_2px_0px_0px_rgba(28,25,23,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-              <Check size={20} /> FINISH
+            <button
+              type="button"
+              onClick={onComplete}
+              className="flex-1 bg-yellow-400 text-stone-900 rounded-xl font-bold flex items-center justify-center gap-2 border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[2px_2px_0px_0px_rgba(28,25,23,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+            >
+              <Check size={20} /> {authStatus === 'loading' ? 'Saving...' : 'FINISH'}
             </button>
           </>
         )}
       </div>
+
+      {authError && (
+        <p className="text-sm text-red-600 font-medium mt-2">{authError}</p>
+      )}
 
       <style>{`
         @keyframes flash {
