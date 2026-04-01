@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Camera,
@@ -9,11 +10,49 @@ import {
   Phone,
   Lock,
   ArrowRight,
-  ArrowLeft
+  ArrowLeft,
 } from 'lucide-react';
+import { loginUser, registerUser } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(false); // Default to Sign Up as per request focus
+  const [authError, setAuthError] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const handleLoginSubmit = async (payload) => {
+    setAuthError('');
+    setAuthLoading(true);
+
+    try {
+      const data = await loginUser(payload);
+      await login(data.token);
+      navigate('/');
+    } catch (error) {
+      const message = error?.response?.data?.message || 'Login failed';
+      setAuthError(message);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleRegisterSubmit = async (payload) => {
+    setAuthError('');
+    setAuthLoading(true);
+
+    try {
+      const data = await registerUser(payload);
+      await login(data.token);
+      navigate('/');
+    } catch (error) {
+      const message = error?.response?.data?.message || 'Registration failed';
+      setAuthError(message);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#FFFDF0] flex items-center justify-center p-4 relative overflow-hidden font-sans">
@@ -150,9 +189,19 @@ export default function AuthPage() {
           <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
             <AnimatePresence mode="wait">
               {isLogin ? (
-                <LoginForm key="login" />
+                <LoginForm
+                  key="login"
+                  onSubmit={handleLoginSubmit}
+                  error={authError}
+                  loading={authLoading}
+                />
               ) : (
-                <MultiStepRegister key="register" />
+                <MultiStepRegister
+                  key="register"
+                  onSubmit={handleRegisterSubmit}
+                  error={authError}
+                  loading={authLoading}
+                />
               )}
             </AnimatePresence>
           </div>
@@ -164,7 +213,15 @@ export default function AuthPage() {
 
 // --- SUB-COMPONENTS ---
 
-function LoginForm() {
+function LoginForm({ onSubmit, error, loading }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await onSubmit({ email, password });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -179,10 +236,33 @@ function LoginForm() {
         </p>
       </div>
 
-      <div className="space-y-4">
-        <GamifiedInput icon={Mail} type="email" placeholder="Email Address" />
-        <GamifiedInput icon={Lock} type="password" placeholder="Password" />
-      </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <GamifiedInput
+          icon={Mail}
+          type="email"
+          placeholder="Email Address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <GamifiedInput
+          icon={Lock}
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        {error ? (
+          <p className="text-sm font-semibold text-red-600">{error}</p>
+        ) : null}
+        <RetroButton
+          text={loading ? 'ENTERING...' : 'ENTER SYSTEM'}
+          fullWidth
+          type="submit"
+          disabled={loading}
+        />
+      </form>
 
       <div className="flex items-center justify-between text-sm">
         <label className="flex items-center gap-2 cursor-pointer text-stone-600">
@@ -199,8 +279,6 @@ function LoginForm() {
           Forgot Password?
         </a>
       </div>
-
-      <RetroButton text="ENTER SYSTEM" fullWidth />
 
       <div className="relative py-4">
         <div className="absolute inset-0 flex items-center">
@@ -220,17 +298,29 @@ function LoginForm() {
   );
 }
 
-function MultiStepRegister() {
+function MultiStepRegister({ onSubmit, error, loading }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    password: '',
     phone: '',
     faceImage: null,
   });
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
+  const canContinue =
+    formData.name.trim() && formData.email.trim() && formData.password.trim();
+
+  const handleSubmit = async () => {
+    await onSubmit({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      phone: formData.phone,
+    });
+  };
 
   return (
     <motion.div
@@ -268,13 +358,42 @@ function MultiStepRegister() {
             <p className="text-stone-500">Join the SphereTest network.</p>
           </div>
           <div className="space-y-4">
-            <GamifiedInput icon={User} type="text" placeholder="Full Name" />
+            <GamifiedInput
+              icon={User}
+              type="text"
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+            />
             <GamifiedInput
               icon={Mail}
               type="email"
               placeholder="Email Address"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
             />
-            <GamifiedInput icon={Phone} type="tel" placeholder="Phone Number" />
+            <GamifiedInput
+              icon={Lock}
+              type="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+            />
+            <GamifiedInput
+              icon={Phone}
+              type="tel"
+              placeholder="Phone Number"
+              value={formData.phone}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
+            />
           </div>
           <div className="pt-4">
             <RetroButton
@@ -282,17 +401,23 @@ function MultiStepRegister() {
               onClick={nextStep}
               fullWidth
               icon={ArrowRight}
+              disabled={!canContinue}
             />
           </div>
         </div>
       ) : (
-        <FaceCaptureStep onBack={prevStep} />
+        <FaceCaptureStep
+          onBack={prevStep}
+          onFinish={handleSubmit}
+          submitting={loading}
+          error={error}
+        />
       )}
     </motion.div>
   );
 }
 
-function FaceCaptureStep({ onBack }) {
+function FaceCaptureStep({ onBack, onFinish, submitting, error }) {
   const webcamRef = useRef(null);
   const [imgSrc, setImgSrc] = useState(null);
   const [isCapturing, setIsCapturing] = useState(false);
@@ -315,7 +440,10 @@ function FaceCaptureStep({ onBack }) {
   React.useEffect(() => {
     if (!imgSrc) startVideo();
     return () => {
-      // Cleanup stream if needed
+      // Cleanup stream on unmount or when imgSrc changes
+      if (videoRef.current && videoRef.current.srcObject) {
+        videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+      }
     };
   }, [imgSrc, startVideo]);
 
@@ -401,12 +529,20 @@ function FaceCaptureStep({ onBack }) {
             >
               <RefreshCw size={20} /> RETAKE
             </button>
-            <button className="flex-1 bg-yellow-400 text-stone-900 rounded-xl font-bold flex items-center justify-center gap-2 border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[2px_2px_0px_0px_rgba(28,25,23,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-              <Check size={20} /> FINISH
+            <button
+              onClick={onFinish}
+              disabled={submitting}
+              className="flex-1 bg-yellow-400 text-stone-900 rounded-xl font-bold flex items-center justify-center gap-2 border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[2px_2px_0px_0px_rgba(28,25,23,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-60"
+            >
+              <Check size={20} /> {submitting ? 'FINISHING...' : 'FINISH'}
             </button>
           </>
         )}
       </div>
+
+      {error ? (
+        <p className="text-sm font-semibold text-red-600">{error}</p>
+      ) : null}
 
       <style>{`
         @keyframes flash {
@@ -437,12 +573,21 @@ function GamifiedInput({ icon: Icon, ...props }) {
   );
 }
 
-function RetroButton({ text, onClick, fullWidth, icon: Icon }) {
+function RetroButton({
+  text,
+  onClick,
+  fullWidth,
+  icon: Icon,
+  type = 'button',
+  disabled = false,
+}) {
   return (
     <button
+      type={type}
       onClick={onClick}
+      disabled={disabled}
       className={`
-        relative group cursor-pointer
+        relative group cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed
         ${fullWidth ? 'w-full' : 'w-auto'}
       `}
     >

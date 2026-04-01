@@ -6,9 +6,9 @@ const { asyncHandler } = require('../utils/errorHandler');
  * Generate JWT token
  */
 const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET || 'spheretest_secret_key_change_in_production', {
-        expiresIn: '30d',
-    });
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: '30d',
+  });
 };
 
 /**
@@ -17,40 +17,40 @@ const generateToken = (id) => {
  * @access  Public
  */
 const register = asyncHandler(async (req, res) => {
-    const { name, email, password, phone, role } = req.body;
+  const { name, email, password, phone, role } = req.body;
 
-    if (!name || !email || !password) {
-        res.status(400);
-        throw new Error('Name, email, and password are required');
-    }
+  if (!name || !email || !password) {
+    res.status(400);
+    throw new Error('Name, email, and password are required');
+  }
 
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-        res.status(409);
-        throw new Error('User already exists');
-    }
+  const userExists = await User.findOne({ email });
+  if (userExists) {
+    res.status(409);
+    throw new Error('User already exists');
+  }
 
-    const user = await User.create({
-        name,
-        email,
-        password,
-        phone: phone || undefined,
-        role: role || 'student',
+  const user = await User.create({
+    name,
+    email,
+    password,
+    phone: phone || undefined,
+    role: role || 'student',
+  });
+
+  if (user) {
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      token: generateToken(user._id),
     });
-
-    if (user) {
-        res.status(201).json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            role: user.role,
-            token: generateToken(user._id),
-        });
-    } else {
-        res.status(400);
-        throw new Error('Invalid user data');
-    }
+  } else {
+    res.status(400);
+    throw new Error('Invalid user data');
+  }
 });
 
 /**
@@ -59,28 +59,28 @@ const register = asyncHandler(async (req, res) => {
  * @access  Public
  */
 const login = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    if (!email || !password) {
-        res.status(400);
-        throw new Error('Email and password are required');
-    }
+  if (!email || !password) {
+    res.status(400);
+    throw new Error('Email and password are required');
+  }
 
-    const user = await User.findOne({ email });
+  const user = await User.findOne({ email });
 
-    if (user && (await user.matchPassword(password))) {
-        res.json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            role: user.role,
-            token: generateToken(user._id),
-        });
-    } else {
-        res.status(401);
-        throw new Error('Invalid email or password');
-    }
+  if (user && (await user.matchPassword(password))) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      token: generateToken(user._id),
+    });
+  } else {
+    res.status(401);
+    throw new Error('Invalid email or password');
+  }
 });
 
 /**
@@ -89,17 +89,17 @@ const login = asyncHandler(async (req, res) => {
  * @access  Private
  */
 const getMe = asyncHandler(async (req, res) => {
-    res.json({
-        _id: req.user._id,
-        name: req.user.name,
-        email: req.user.email,
-        phone: req.user.phone,
-        role: req.user.role,
-    });
+  res.json({
+    _id: req.user._id,
+    name: req.user.name,
+    email: req.user.email,
+    phone: req.user.phone,
+    role: req.user.role,
+  });
 });
 
 module.exports = {
-    register,
-    login,
-    getMe,
+  register,
+  login,
+  getMe,
 };

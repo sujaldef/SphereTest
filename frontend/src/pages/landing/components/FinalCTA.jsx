@@ -1,20 +1,31 @@
-
-import { motion  } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 export default function FinalCTA() {
+  const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+
+  const handleCreateRedirect = () => {
+    if (token) {
+      navigate('/dashboard/create');
+    } else {
+      navigate('/login');
+    }
+  };
+
   return (
     <section className="py-24 bg-black text-white relative overflow-hidden">
       {/* Background Grid Effect */}
-      <div 
-        className="absolute inset-0 opacity-10" 
-        style={{ 
-          backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', 
-          backgroundSize: '30px 30px' 
+      <div
+        className="absolute inset-0 opacity-10"
+        style={{
+          backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)',
+          backgroundSize: '30px 30px',
         }}
       ></div>
 
-     <style>
-{`
+      <style>
+        {`
   .uiverse-btn-2x {
     display: flex;
     align-items: center;
@@ -78,8 +89,7 @@ export default function FinalCTA() {
     transition-delay: 200ms;
   }
 `}
-</style>
-
+      </style>
 
       <div className="container mx-auto px-6 text-center relative z-10">
         <motion.div
@@ -89,10 +99,14 @@ export default function FinalCTA() {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-5xl md:text-7xl font-black mb-8 tracking-tight">
-            Ready to Launch Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Sphere</span>?
+            Ready to Launch Your{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
+              Sphere
+            </span>
+            ?
           </h2>
           <p className="text-2xl text-gray-400 mb-16 max-w-3xl mx-auto font-medium">
-            Build a gamified, real-time quiz or coding challenge in seconds. 
+            Build a gamified, real-time quiz or coding challenge in seconds.
             Your students are waiting for Player 1 to start the game.
           </p>
 
@@ -100,15 +114,22 @@ export default function FinalCTA() {
             <motion.button
               whileTap={{ scale: 0.95 }}
               className="uiverse-btn-2x"
+              onClick={handleCreateRedirect}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 36 36"
-                width="72px" 
+                width="72px"
                 height="72px"
               >
                 {/* Rect set to transparent to blend with button */}
-                <rect width="36" height="36" x="0" y="0" fill="transparent"></rect>
+                <rect
+                  width="36"
+                  height="36"
+                  x="0"
+                  y="0"
+                  fill="transparent"
+                ></rect>
                 <path
                   fill="#e53935"
                   d="M38.67,42H11.52C11.27,40.62,11,38.57,11,36c0-5,0-11,0-11s1.44-7.39,3.22-9.59 c1.67-2.06,2.76-3.48,6.78-4.41c3-0.7,7.13-0.23,9,1c2.15,1.42,3.37,6.67,3.81,11.29c1.49-0.3,5.21,0.2,5.5,1.28 C40.89,30.29,39.48,38.31,38.67,42z"
@@ -142,7 +163,9 @@ export default function FinalCTA() {
                   d="M15.078,19.043c1.957-0.326,5.122-0.529,4.435,1.304c-0.489,1.304-7.185,2.185-7.185,0.652 C12.328,19.467,15.078,19.043,15.078,19.043z"
                 ></path>
               </svg>
-              <span className="now-text text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Launch!</span>
+              <span className="now-text text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
+                Launch!
+              </span>
               <span className="play-text ">Create</span>
             </motion.button>
           </div>

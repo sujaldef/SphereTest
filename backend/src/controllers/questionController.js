@@ -99,6 +99,17 @@ const updateQuestion = asyncHandler(async (req, res) => {
     throw new Error('Question not found');
   }
 
+  const sphere = await Sphere.findById(question.sphereId);
+  if (!sphere) {
+    res.status(404);
+    throw new Error('Sphere not found');
+  }
+
+  if (sphere.createdBy.toString() !== req.user._id.toString()) {
+    res.status(403);
+    throw new Error('Forbidden');
+  }
+
   // Update fields
   Object.keys(req.body).forEach((key) => {
     if (key !== '_id' && key !== 'sphereId') {
@@ -123,6 +134,17 @@ const deleteQuestion = asyncHandler(async (req, res) => {
     throw new Error('Question not found');
   }
 
+  const sphere = await Sphere.findById(question.sphereId);
+  if (!sphere) {
+    res.status(404);
+    throw new Error('Sphere not found');
+  }
+
+  if (sphere.createdBy.toString() !== req.user._id.toString()) {
+    res.status(403);
+    throw new Error('Forbidden');
+  }
+
   await question.deleteOne();
 
   res.status(200).json({ message: 'Question deleted successfully' });
@@ -134,4 +156,3 @@ module.exports = {
   updateQuestion,
   deleteQuestion,
 };
-

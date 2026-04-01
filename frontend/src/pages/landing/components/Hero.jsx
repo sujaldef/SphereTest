@@ -1,6 +1,5 @@
-
 import { motion } from 'framer-motion';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 import hero from './../../../assets/hero.png'; // Ensure this path is correct
 
@@ -16,6 +15,15 @@ const fadeUp = {
 
 export default function Hero() {
   const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+
+  const handleCreateRedirect = () => {
+    if (token) {
+      navigate('/dashboard/create');
+    } else {
+      navigate('/login');
+    }
+  };
   return (
     <section className="flex items-center bg-[#FFFDF0] min-h-[90vh] relative overflow-hidden">
       {/* CSS for the Buttons */}
@@ -123,15 +131,16 @@ export default function Hero() {
             </p>
 
             {/* Side-by-Side Buttons */}
-            <div className="flex flex-wrap gap-4"> {/* Reduced buttonss */}
+            <div className="flex flex-wrap gap-4">
+              {' '}
+              {/* Reduced buttonss */}
               {/* BUTTON 1: CREATE SPHERE here */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="uiverse-btn-2x"
-                onClick={() => navigate("/create")}
+                onClick={handleCreateRedirect}
               >
-
                 {/* Rocket Icon */}
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
                   <path
@@ -170,13 +179,12 @@ export default function Hero() {
                 <span className="now-text text-stone-800">Launch!</span>
                 <span className="play-text">Create</span>
               </motion.button>
-
               {/* BUTTON 2: JOIN SPHERE */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="uiverse-btn-2x btn-join"
-                onClick={() => navigate("/join")}
+                onClick={() => navigate('/join')}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -198,15 +206,32 @@ export default function Hero() {
                     stroke="black"
                     strokeWidth="2"
                   ></rect>
-                  <path d="M6 12h4m-2-2v4" stroke="black" strokeWidth="2"></path>
-                  <line x1="15" y1="11" x2="15.01" y2="11" stroke="black" strokeWidth="3"></line>
-                  <line x1="18" y1="13" x2="18.01" y2="13" stroke="black" strokeWidth="3"></line>
+                  <path
+                    d="M6 12h4m-2-2v4"
+                    stroke="black"
+                    strokeWidth="2"
+                  ></path>
+                  <line
+                    x1="15"
+                    y1="11"
+                    x2="15.01"
+                    y2="11"
+                    stroke="black"
+                    strokeWidth="3"
+                  ></line>
+                  <line
+                    x1="18"
+                    y1="13"
+                    x2="18.01"
+                    y2="13"
+                    stroke="black"
+                    strokeWidth="3"
+                  ></line>
                 </svg>
 
                 <span className="now-text text-stone-800">Enter!</span>
                 <span className="play-text">Join</span>
               </motion.button>
-
             </div>
           </motion.div>
 
