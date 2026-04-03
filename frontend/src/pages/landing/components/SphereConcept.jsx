@@ -1,14 +1,19 @@
-
 import { motion } from 'framer-motion';
-
-import { BsCheckCircle } from 'react-icons/bs';
+import {
+  FaTrophy,
+  FaBrain,
+  FaShieldAlt,
+  FaBolt,
+  FaFire,
+  FaStar,
+} from 'react-icons/fa';
 
 // --- ANIMATION VARIANTS ---
 const staggerContainer = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.2 },
+    transition: { staggerChildren: 0.15 },
   },
 };
 
@@ -17,10 +22,23 @@ const fadeUp = {
   show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 80 } },
 };
 
-// --- NEW LIQUID VISUAL COMPONENT ---
+// Gamified floating animation for badges
+const floatingBadge = {
+  animate: {
+    y: [0, -10, 0],
+    rotate: [0, 5, -5, 0],
+    transition: {
+      duration: 4,
+      repeat: Infinity,
+      ease: 'easeInOut',
+    },
+  },
+};
+
+// --- NEW LIQUID VISUAL COMPONENT (Unchanged core, wrapped in game-like container) ---
 const LiquidVisual = () => {
   return (
-    <div className="relative flex justify-center items-center p-10">
+    <div className="relative flex justify-center items-center p-10 w-full h-full">
       <style>{`
         /* From Uiverse.io by andrew-manzyk - Adapted for React & Custom Colors */
         .loader {
@@ -30,8 +48,8 @@ const LiquidVisual = () => {
           --color-three: rgba(245, 230, 211, 0.5); /* Cream Glow */
           --color-four: rgba(0, 0, 0, 0.3); /* Black Shadow */
           
-          --time-animation: 3s; /* Slowed down slightly for elegance */
-          --size: 3.5; /* SCALED UP for the section */
+          --time-animation: 3s; 
+          --size: 3.5; 
           
           position: relative;
           border-radius: 50%;
@@ -39,7 +57,6 @@ const LiquidVisual = () => {
           box-shadow:
             0 0 25px 0 var(--color-three),
             0 20px 50px 0 var(--color-four);
-            /* Note: We removed 'colorize' animation to keep strict Cream/Black palette */
         }
 
         .loader::before {
@@ -73,7 +90,7 @@ const LiquidVisual = () => {
 
         .loader svg {
           position: absolute;
-          width: 0; height: 0; /* Hide the SVG wrapper but keep defs active */
+          width: 0; height: 0; 
         }
 
         .loader svg #clipping {
@@ -85,7 +102,6 @@ const LiquidVisual = () => {
           filter: blur(7px);
         }
 
-        /* Rotations for the internal liquid shapes */
         .loader svg #clipping polygon:nth-child(1) {
           transform-origin: 75% 25%;
           transform: rotate(90deg);
@@ -154,57 +170,161 @@ const LiquidVisual = () => {
 
 // --- MAIN SECTION ---
 export default function SphereConcept() {
+  const gamifiedFeatures = [
+    {
+      title: 'Live Leaderboards',
+      desc: 'Real-time competitive tracking',
+      icon: <FaTrophy size={20} />,
+      bgColor: 'bg-[#d0f4de]',
+      iconColor: 'text-[#2d6a4f]',
+    },
+    {
+      title: 'AI Analytics',
+      desc: 'Instant insights & weak points',
+      icon: <FaBrain size={20} />,
+      bgColor: 'bg-[#e4c1f9]',
+      iconColor: 'text-[#5a189a]',
+    },
+    {
+      title: 'Secure Rooms',
+      desc: 'Built-in anti-cheat basics',
+      icon: <FaShieldAlt size={20} />,
+      bgColor: 'bg-[#ffc8dd]',
+      iconColor: 'text-[#c9184a]',
+    },
+    {
+      title: 'Custom Quizzes',
+      desc: 'MCQ, Coding & Hybrid formats',
+      icon: <FaBolt size={20} />,
+      bgColor: 'bg-[#a2d2ff]',
+      iconColor: 'text-[#0077b6]',
+    },
+  ];
+
   return (
-    <section className="py-24 container mx-auto px-6 flex flex-col md:flex-row items-center gap-16 overflow-hidden">
-      
-      {/* --- LEFT SIDE: TEXT CONTENT (UNCHANGED) --- */}
-      <motion.div
-        className="md:w-1/2 text-center md:text-left"
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, amount: 0.3 }}
-      >
-        <motion.h2 variants={fadeUp} className="text-4xl md:text-5xl font-bold mb-6">
-          What is a <span className="text-gray-500">Sphere</span>?
-        </motion.h2>
-
-        <motion.p variants={fadeUp} className="text-xl text-gray-700 mb-8">
-          A **Sphere** is your personal, creative test room. It’s a live, gamified environment you control – launch a pop quiz, coding challenge, or full exam. Secure, real-time, and instantly insightful.
-        </motion.p>
-        
-        <motion.h3 variants={fadeUp} className="text-2xl font-semibold mb-5 text-left">
-          Your All-in-One Testing Environment:
-        </motion.h3>
-        
-        <motion.ul variants={fadeUp} className="space-y-3 text-left mb-10">
-          {[
-            "Live Leaderboards & Real-Time Engagement",
-            "AI-Driven Performance Analytics",
-            "Secure Rooms with Anti-Cheat Basics",
-            "Custom Quizzes (MCQ, Coding, & Hybrid)"
-          ].map((item, index) => (
-            <li key={index} className="flex items-center text-lg text-gray-700">
-              <BsCheckCircle className="inline mr-3 text-black flex-shrink-0" />
-              {item}
-            </li>
-          ))}
-        </motion.ul>
-
-       
-      </motion.div>
-
-      {/* --- RIGHT SIDE: NEW LIQUID VISUAL --- */}
-      <div className="w-full md:w-1/2 flex justify-center items-center h-[400px]">
+    <section className="relative min-h-[90vh] flex items-center overflow-hidden py-24 font-sans">
+      {/* --- CONTENT LAYER --- */}
+      <div className="container mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-16">
+        {/* --- LEFT SIDE: TEXT CONTENT --- */}
         <motion.div
+          className="lg:w-1/2 text-center lg:text-left"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+        >
+          <motion.div
+            variants={fadeUp}
+            className="inline-block mb-4 px-4 py-1 border-2 border-black rounded-full bg-white font-bold text-sm uppercase tracking-widest shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+          >
+            Level 1: The Basics
+          </motion.div>
+
+          <motion.h2
+            variants={fadeUp}
+            className="text-5xl md:text-6xl font-black mb-6 text-black tracking-tight uppercase"
+          >
+            What is a{' '}
+            <span className="text-white custom-text-outline">Sphere</span>?
+          </motion.h2>
+
+          <motion.p
+            variants={fadeUp}
+            className="text-xl text-gray-800 mb-10 font-medium bg-white/60 p-4 rounded-xl border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] backdrop-blur-sm"
+          >
+            A <strong>Sphere</strong> is your personal, creative test room. It’s
+            a live, gamified environment you control – launch a pop quiz, coding
+            challenge, or full exam. Secure, real-time, and instantly
+            insightful.
+          </motion.p>
+
+          <motion.h3
+            variants={fadeUp}
+            className="text-2xl font-black uppercase tracking-tight mb-6 text-black"
+          >
+            Your Quest Objectives:
+          </motion.h3>
+
+          {/* Gamified Feature Grid */}
+          <motion.div
+            variants={fadeUp}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left"
+          >
+            {gamifiedFeatures.map((item, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.05, translateY: -5 }}
+                className="flex flex-col p-4 bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] transition-all cursor-pointer group"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span
+                    className={`flex items-center justify-center w-10 h-10 rounded-lg border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] ${item.bgColor} ${item.iconColor} group-hover:-translate-y-1 transition-transform`}
+                  >
+                    {item.icon}
+                  </span>
+                  <h4 className="font-black text-lg text-black uppercase tracking-tight">
+                    {item.title}
+                  </h4>
+                </div>
+                <p className="text-sm text-gray-600 font-bold pl-1">
+                  {item.desc}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
+
+        {/* --- RIGHT SIDE: LIQUID VISUAL + GAMIFIED ELEMENTS --- */}
+        <div className="w-full lg:w-1/2 flex justify-center items-center h-[500px] relative mt-16 lg:mt-0">
+          {/* Floating Gamified Badge 1 */}
+          <motion.div
+            variants={floatingBadge}
+            animate="animate"
+            className="absolute top-10 right-10 md:right-20 z-20 flex items-center gap-2 bg-black text-white px-4 py-2 rounded-xl font-black uppercase tracking-widest border-2 border-white shadow-[4px_4px_0px_rgba(255,255,255,1)] rotate-6"
+          >
+            <FaFire className="text-[#ff5400] text-xl drop-shadow-md" /> Streak
+            x5
+          </motion.div>
+
+          {/* Floating Gamified Badge 2 */}
+          <motion.div
+            variants={floatingBadge}
+            animate="animate"
+            style={{ animationDelay: '1.5s' }}
+            className="absolute bottom-10 left-10 md:left-20 z-20 flex items-center gap-2 bg-white text-black px-4 py-2 rounded-xl font-black uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] -rotate-6"
+          >
+            <FaStar className="text-[#FACC15] text-xl drop-shadow-md" /> +500 XP
+          </motion.div>
+
+          {/* Glowing Game Portal Ring Behind Visual */}
+          <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
+            <div className="w-[300px] h-[300px] border-4 border-dashed border-black rounded-full opacity-20 animate-[spin_20s_linear_infinite]"></div>
+          </div>
+
+          <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1 }}
-        >
+            transition={{ duration: 1, type: 'spring', bounce: 0.4 }}
+            className="relative z-10"
+          >
             <LiquidVisual />
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
 
+      {/* --- GAMIFIED STYLES --- */}
+      <style>{`
+        /* Custom Text Outline for Gamified look */
+        .custom-text-outline {
+          color: white;
+          text-shadow: 
+            -2px -2px 0 #000,  
+             2px -2px 0 #000,
+            -2px  2px 0 #000,
+             2px  2px 0 #000,
+             4px  4px 0 #000; /* Drop shadow */
+        }
+      `}</style>
     </section>
   );
 }
