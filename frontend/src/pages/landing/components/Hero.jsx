@@ -24,88 +24,10 @@ export default function Hero() {
       navigate('/login');
     }
   };
+
   return (
-    <section className="flex items-center bg-[#FFFDF0] min-h-[90vh] relative overflow-hidden">
-      {/* CSS for the Buttons */}
-      <style>{`
-        .uiverse-btn-2x {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;              /* Reduced gap */
-          padding: 6px 16px;     /* Reduced padding */
-          color: #1a1a1a;
-          text-shadow: none;
-          text-transform: uppercase;
-          cursor: pointer;
-          border: solid 2px #1a1a1a; /* Thinner border */
-          letter-spacing: 1px;
-          font-weight: 800;
-          font-size: 14px;       /* Reduced font size */
-          background-color: #FFFDD0;
-          border-radius: 50px;
-          position: relative;
-          overflow: hidden;
-          transition: all 0.4s ease;
-          box-shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.15); /* Softer shadow */
-          min-width: 130px;      /* Reduced width */
-          height: 42px;          /* Reduced height */
-        }
-
-        .uiverse-btn-2x:active {
-          transform: scale(0.95);
-        }
-
-        .uiverse-btn-2x svg {
-          transition: all 0.45s ease;
-          z-index: 2;
-          width: 24px;           /* Reduced icon size */
-          height: 24px;          /* Reduced icon size */
-        }
-
-        /* Default visible text */
-        .play-text {
-          transition: all 0.45s ease;
-          transition-delay: 100ms;
-          position: relative;
-          z-index: 2;
-        }
-
-        /* Hover: Move icon and default text out/explode */
-        .uiverse-btn-2x:hover svg {
-          transform: scale(1.5) translate(50%, -10%); /* Adjusted scale for smaller button */
-          opacity: 0.2;
-        }
-
-        .uiverse-btn-2x:hover .play-text {
-          transform: translateX(150%);
-          opacity: 0;
-        }
-
-        /* Hover: Slide in new text */
-        .now-text {
-          position: absolute;
-          left: 0;
-          width: 100%;
-          text-align: center;
-          transform: translateX(-100%);
-          transition: all 0.45s ease;
-          z-index: 3;
-          font-size: 14px;      /* Matched new font size */
-          font-weight: 900;
-        }
-
-        .uiverse-btn-2x:hover .now-text {
-          transform: translateX(0);
-          transition-delay: 100ms;
-        }
-        
-        /* Variant for the second button */
-        .btn-join {
-           background-color: #ffffff;
-        }
-      `}</style>
-
+    <section className="flex items-center min-h-[90vh] relative overflow-hidden">
+      {/* Content Layer */}
       <div className="container mx-auto px-6 py-[5%] relative z-10">
         <motion.div
           className="grid md:grid-cols-2 gap-12 items-center"
@@ -132,9 +54,7 @@ export default function Hero() {
 
             {/* Side-by-Side Buttons */}
             <div className="flex flex-wrap gap-4">
-              {' '}
-              {/* Reduced buttonss */}
-              {/* BUTTON 1: CREATE SPHERE here */}
+              {/* BUTTON 1: CREATE SPHERE */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -179,6 +99,7 @@ export default function Hero() {
                 <span className="now-text text-stone-800">Launch!</span>
                 <span className="play-text">Create</span>
               </motion.button>
+
               {/* BUTTON 2: JOIN SPHERE */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -255,6 +176,83 @@ export default function Hero() {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Styles */}
+      <style>{`
+        /* Button styles remain unchanged */
+        .uiverse-btn-2x {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 6px 16px;
+          color: #1a1a1a;
+          text-shadow: none;
+          text-transform: uppercase;
+          cursor: pointer;
+          border: solid 2px #1a1a1a;
+          letter-spacing: 1px;
+          font-weight: 800;
+          font-size: 14px;
+          background-color: #FFFDD0;
+          border-radius: 50px;
+          position: relative;
+          overflow: hidden;
+          transition: all 0.4s ease;
+          box-shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.15);
+          min-width: 130px;
+          height: 42px;
+        }
+
+        .uiverse-btn-2x:active {
+          transform: scale(0.95);
+        }
+
+        .uiverse-btn-2x svg {
+          transition: all 0.45s ease;
+          z-index: 2;
+          width: 24px;
+          height: 24px;
+        }
+
+        .play-text {
+          transition: all 0.45s ease;
+          transition-delay: 100ms;
+          position: relative;
+          z-index: 2;
+        }
+
+        .uiverse-btn-2x:hover svg {
+          transform: scale(1.5) translate(50%, -10%);
+          opacity: 0.2;
+        }
+
+        .uiverse-btn-2x:hover .play-text {
+          transform: translateX(150%);
+          opacity: 0;
+        }
+
+        .now-text {
+          position: absolute;
+          left: 0;
+          width: 100%;
+          text-align: center;
+          transform: translateX(-100%);
+          transition: all 0.45s ease;
+          z-index: 3;
+          font-size: 14px;
+          font-weight: 900;
+        }
+
+        .uiverse-btn-2x:hover .now-text {
+          transform: translateX(0);
+          transition-delay: 100ms;
+        }
+
+        .btn-join {
+          background-color: #ffffff;
+        }
+      `}</style>
     </section>
   );
 }

@@ -1,5 +1,5 @@
-import  { useState } from 'react';
-import { motion ,AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   FaChartLine,
   FaBrain,
@@ -41,7 +41,6 @@ const features = [
     accentColor: 'bg-[#2d6a4f]',
     rarity: 'COMMON',
     barType: 'XP',
-    // The fun item that flies up when clicked
     funIcon: <FaRocket size={30} className="text-green-600 drop-shadow-md" />,
     funText: '+100 XP!',
   },
@@ -95,12 +94,12 @@ export default function Features() {
   };
 
   return (
-    <section className="py-24 bg-[#FFFDF0] relative overflow-hidden font-sans">
+    <section className="py-24 relative overflow-hidden font-sans">
       {/* Decorative Background Elements */}
-      <div className="absolute top-10 left-10 text-gray-900 opacity-5 rotate-12 pointer-events-none">
+      <div className="absolute top-10 left-10 text-gray-900 opacity-5 rotate-12 pointer-events-none z-0">
         <FaGamepad size={120} />
       </div>
-      <div className="absolute bottom-10 right-10 text-gray-900 opacity-5 -rotate-12 pointer-events-none">
+      <div className="absolute bottom-10 right-10 text-gray-900 opacity-5 -rotate-12 pointer-events-none z-0">
         <FaGamepad size={150} />
       </div>
 
@@ -112,9 +111,9 @@ export default function Features() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-black text-black mb-4 uppercase tracking-tight">
-            Level Up Your Classroom
+            Power-Ups & Abilities
           </h2>
-          <p className="text-gray-500 max-w-2xl mx-auto text-lg font-medium">
+          <p className="text-gray-800 max-w-2xl mx-auto text-lg font-bold bg-white/70 inline-block px-6 py-2 rounded-xl border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] backdrop-blur-sm">
             Click the cards to power up your teaching toolkit.
           </p>
         </motion.div>
@@ -136,7 +135,7 @@ export default function Features() {
               whileTap={{ scale: 0.95 }} // Squish effect on click
               className="relative group cursor-pointer select-none"
             >
-              {/* --- THE ROCKET LAUNCH ANIMATION --- */}
+              {/* --- THE FUN LAUNCH ANIMATION --- */}
               <AnimatePresence>
                 {clickedId === f.id && (
                   <motion.div
@@ -161,7 +160,7 @@ export default function Features() {
                 className={`${f.bgColor} h-full p-6 rounded-xl border-2 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col items-start relative overflow-hidden`}
               >
                 {/* Rarity Badge */}
-                <div className="absolute top-3 right-3 border-2 border-black bg-white px-2 py-0.5 text-[10px] font-black tracking-widest rounded-md uppercase">
+                <div className="absolute top-3 right-3 border-2 border-black bg-white px-2 py-0.5 text-[10px] font-black tracking-widest rounded-md uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                   {f.rarity}
                 </div>
 
@@ -176,18 +175,18 @@ export default function Features() {
                 </h3>
 
                 {/* Description */}
-                <p className="text-black/70 text-sm font-medium leading-relaxed mb-6">
+                <p className="text-black/80 text-sm font-bold leading-relaxed mb-6">
                   {f.desc}
                 </p>
 
                 {/* Game HUD Bar (Animates on Click) */}
                 <div className="mt-auto w-full">
-                  <div className="flex justify-between text-[10px] font-black text-black/60 uppercase tracking-wider mb-1">
+                  <div className="flex justify-between text-[10px] font-black text-black/80 uppercase tracking-wider mb-1">
                     <span>{f.barType}</span>
                     <span>{clickedId === f.id ? '100/100' : '40/100'}</span>
                   </div>
 
-                  <div className="w-full bg-white h-3 rounded-full border-2 border-black relative overflow-hidden">
+                  <div className="w-full bg-white h-3 rounded-full border-2 border-black relative overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
                     {/* The Fill Bar */}
                     <motion.div
                       className={`${f.accentColor} h-full border-r-2 border-black rounded-l-full`}
