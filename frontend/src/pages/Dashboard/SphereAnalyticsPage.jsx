@@ -49,12 +49,15 @@ export default function SphereAnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="w-full p-8">
-        <div className="animate-pulse space-y-6">
-          <div className="h-12 bg-[#13131f] rounded w-48"></div>
+      <div className="w-full min-h-screen global-bg flex items-center justify-center p-8">
+        <div className="animate-pulse space-y-6 w-full max-w-4xl">
+          <div className="h-12 bg-white border-2 border-black rounded w-48 shadow-[4px_4px_0px_rgba(0,0,0,1)]"></div>
           <div className="grid grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-32 bg-[#13131f] rounded"></div>
+              <div
+                key={i}
+                className="h-32 bg-white border-4 border-black rounded shadow-[6px_6px_0px_rgba(0,0,0,1)]"
+              ></div>
             ))}
           </div>
         </div>
@@ -64,11 +67,11 @@ export default function SphereAnalyticsPage() {
 
   if (error) {
     return (
-      <div className="w-full p-8">
+      <div className="w-full min-h-screen global-bg flex items-center justify-center p-8">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="p-6 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400"
+          className="p-6 bg-white border-4 border-black rounded-lg shadow-[8px_8px_0px_rgba(0,0,0,1)] text-red-600 font-bold"
         >
           {error}
         </motion.div>
@@ -78,14 +81,13 @@ export default function SphereAnalyticsPage() {
 
   if (!sphere) {
     return (
-      <div className="w-full p-8">
+      <div className="w-full min-h-screen global-bg flex items-center justify-center p-8">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <div className="p-12 bg-[#13131f] rounded-xl border border-[#1e1e2f] text-center">
-            <BarChart
-              size={48}
-              className="mx-auto text-[#64748b] opacity-30 mb-4"
-            />
-            <p className="text-[#64748b] text-lg">Sphere not found</p>
+          <div className="p-12 bg-white rounded-lg border-4 border-black text-center shadow-[8px_8px_0px_rgba(0,0,0,1)]">
+            <BarChart size={48} className="mx-auto text-black mb-4" />
+            <p className="text-black text-lg font-bold uppercase">
+              Sphere not found
+            </p>
           </div>
         </motion.div>
       </div>
@@ -97,52 +99,51 @@ export default function SphereAnalyticsPage() {
       label: 'Total Participants',
       value: sphere.participants?.length || 0,
       icon: Users,
-      color: 'from-blue-500/20 to-blue-900/20',
     },
     {
       label: 'Questions',
       value: questions.length,
       icon: FileText,
-      color: 'from-purple-500/20 to-purple-900/20',
     },
     {
       label: 'Avg Score',
       value: '—',
       icon: TrendingUp,
-      color: 'from-green-500/20 to-green-900/20',
     },
     {
       label: 'Duration',
       value: `${sphere.duration} min`,
       icon: Clock,
-      color: 'from-orange-500/20 to-orange-900/20',
     },
   ];
 
   return (
-    <div className="w-full p-8 space-y-8">
+    <div className="w-full min-h-screen global-bg p-8 space-y-8">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between"
+        className="flex items-center justify-between bg-white border-4 border-black rounded-lg p-6 shadow-[6px_6px_0px_rgba(0,0,0,1)]"
       >
         <div>
-          <h1 className="text-3xl font-black text-[#e2e8f0] mb-2">
+          <h1 className="text-3xl font-black text-black mb-2 uppercase">
             {sphere.title}
           </h1>
-          <p className="text-[#64748b] text-sm">
-            Game Code:{' '}
-            <span className="font-mono font-bold text-[#e2e8f0]">
+          <p className="text-black/50 text-sm font-bold">
+            GAME CODE:{' '}
+            <span className="font-mono font-bold text-black">
               {sphere.gameCode}
             </span>
           </p>
         </div>
         <button
           onClick={handleExport}
-          className="flex items-center gap-2 px-4 py-2 bg-[#6366f1] hover:bg-[#6366f1]/80 text-white font-bold rounded-lg transition-colors"
+          className="game-box flex items-center gap-2 px-4 py-2"
         >
-          <Download size={16} /> Export Report
+          <div className="game-box-shadow bg-yellow-400"></div>
+          <div className="game-box-content bg-yellow-300 border-2 border-black gap-2 flex items-center">
+            <Download size={16} /> EXPORT
+          </div>
         </button>
       </motion.div>
 
@@ -160,13 +161,17 @@ export default function SphereAnalyticsPage() {
               key={i}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`p-6 bg-gradient-to-br ${stat.color} border border-[#6366f1]/30 rounded-xl`}
+              className="p-6 bg-white border-4 border-black rounded-lg shadow-[6px_6px_0px_rgba(0,0,0,1)]"
             >
               <div className="flex items-center justify-between mb-4">
-                <p className="text-[#64748b] text-sm font-bold">{stat.label}</p>
-                <Icon size={20} className="text-[#6366f1]" />
+                <p className="text-black text-sm font-bold uppercase">
+                  {stat.label}
+                </p>
+                <div className="w-10 h-10 bg-yellow-200 border-2 border-black rounded-full flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                  <Icon size={20} className="text-black" />
+                </div>
               </div>
-              <p className="text-3xl font-black text-[#e2e8f0]">{stat.value}</p>
+              <p className="text-3xl font-black text-black">{stat.value}</p>
             </motion.div>
           );
         })}
@@ -176,25 +181,27 @@ export default function SphereAnalyticsPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-[#13131f] border border-[#6366f1]/20 rounded-xl overflow-hidden"
+        className="bg-white border-4 border-black rounded-lg overflow-hidden shadow-[6px_6px_0px_rgba(0,0,0,1)]"
       >
-        <div className="px-6 py-4 border-b border-[#6366f1]/20">
-          <h2 className="text-lg font-black text-[#e2e8f0]">Participants</h2>
+        <div className="px-6 py-4 border-b-4 border-black bg-yellow-300">
+          <h2 className="text-lg font-black text-black uppercase">
+            PARTICIPANTS
+          </h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#0a0a0f] border-b border-[#6366f1]/20">
-                <th className="px-6 py-3 text-left text-[#64748b] font-bold">
+              <tr className="bg-yellow-200 border-b-2 border-black">
+                <th className="px-6 py-3 text-left text-black font-bold uppercase">
                   #
                 </th>
-                <th className="px-6 py-3 text-left text-[#64748b] font-bold">
+                <th className="px-6 py-3 text-left text-black font-bold uppercase">
                   Name
                 </th>
-                <th className="px-6 py-3 text-left text-[#64748b] font-bold">
+                <th className="px-6 py-3 text-left text-black font-bold uppercase">
                   Email
                 </th>
-                <th className="px-6 py-3 text-left text-[#64748b] font-bold">
+                <th className="px-6 py-3 text-left text-black font-bold uppercase">
                   Join Time
                 </th>
               </tr>
@@ -204,18 +211,18 @@ export default function SphereAnalyticsPage() {
                 sphere.participants.map((participant, i) => (
                   <tr
                     key={i}
-                    className="border-b border-[#6366f1]/10 hover:bg-[#0a0a0f]/50 transition-colors"
+                    className="border-b-2 border-black hover:bg-yellow-50 transition-colors"
                   >
-                    <td className="px-6 py-3 text-[#e2e8f0] font-mono">
+                    <td className="px-6 py-3 text-black font-mono font-bold">
                       {i + 1}
                     </td>
-                    <td className="px-6 py-3 text-[#e2e8f0] font-bold">
+                    <td className="px-6 py-3 text-black font-bold">
                       {participant.name || 'Unknown'}
                     </td>
-                    <td className="px-6 py-3 text-[#64748b] text-xs">
+                    <td className="px-6 py-3 text-black/50 text-xs font-bold">
                       {participant.email || '—'}
                     </td>
-                    <td className="px-6 py-3 text-[#64748b] text-xs">
+                    <td className="px-6 py-3 text-black/50 text-xs font-bold">
                       {participant.createdAt
                         ? new Date(participant.createdAt).toLocaleDateString()
                         : '—'}
@@ -226,9 +233,9 @@ export default function SphereAnalyticsPage() {
                 <tr>
                   <td
                     colSpan="4"
-                    className="px-6 py-8 text-center text-[#64748b]"
+                    className="px-6 py-8 text-center text-black/50 font-bold"
                   >
-                    No participants yet
+                    NO PARTICIPANTS YET
                   </td>
                 </tr>
               )}
@@ -241,25 +248,25 @@ export default function SphereAnalyticsPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-[#13131f] border border-[#6366f1]/20 rounded-xl overflow-hidden"
+        className="bg-white border-4 border-black rounded-lg overflow-hidden shadow-[6px_6px_0px_rgba(0,0,0,1)]"
       >
-        <div className="px-6 py-4 border-b border-[#6366f1]/20">
-          <h2 className="text-lg font-black text-[#e2e8f0]">Questions</h2>
+        <div className="px-6 py-4 border-b-4 border-black bg-yellow-300">
+          <h2 className="text-lg font-black text-black uppercase">QUESTIONS</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#0a0a0f] border-b border-[#6366f1]/20">
-                <th className="px-6 py-3 text-left text-[#64748b] font-bold">
+              <tr className="bg-yellow-200 border-b-2 border-black">
+                <th className="px-6 py-3 text-left text-black font-bold uppercase">
                   #
                 </th>
-                <th className="px-6 py-3 text-left text-[#64748b] font-bold">
+                <th className="px-6 py-3 text-left text-black font-bold uppercase">
                   Question
                 </th>
-                <th className="px-6 py-3 text-left text-[#64748b] font-bold">
+                <th className="px-6 py-3 text-left text-black font-bold uppercase">
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-[#64748b] font-bold">
+                <th className="px-6 py-3 text-left text-black font-bold uppercase">
                   Answer
                 </th>
               </tr>
@@ -269,20 +276,20 @@ export default function SphereAnalyticsPage() {
                 questions.map((question, i) => (
                   <tr
                     key={i}
-                    className="border-b border-[#6366f1]/10 hover:bg-[#0a0a0f]/50 transition-colors"
+                    className="border-b-2 border-black hover:bg-yellow-50 transition-colors"
                   >
-                    <td className="px-6 py-3 text-[#e2e8f0] font-mono">
+                    <td className="px-6 py-3 text-black font-mono font-bold">
                       {i + 1}
                     </td>
-                    <td className="px-6 py-3 text-[#e2e8f0] font-bold truncate max-w-xs">
+                    <td className="px-6 py-3 text-black font-bold truncate max-w-xs">
                       {question.questionText}
                     </td>
                     <td className="px-6 py-3">
-                      <span className="px-2 py-1 rounded text-xs font-bold bg-[#6366f1]/20 text-[#6366f1]">
+                      <span className="px-2 py-1 rounded text-xs font-bold bg-yellow-200 text-black border-2 border-black">
                         {question.type}
                       </span>
                     </td>
-                    <td className="px-6 py-3 text-[#64748b] text-xs font-mono">
+                    <td className="px-6 py-3 text-black/50 text-xs font-mono font-bold">
                       {String(question.correctAnswer).substring(0, 30)}...
                     </td>
                   </tr>
@@ -291,9 +298,9 @@ export default function SphereAnalyticsPage() {
                 <tr>
                   <td
                     colSpan="4"
-                    className="px-6 py-8 text-center text-[#64748b]"
+                    className="px-6 py-8 text-center text-black/50 font-bold"
                   >
-                    No questions added yet
+                    NO QUESTIONS ADDED YET
                   </td>
                 </tr>
               )}

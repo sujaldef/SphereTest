@@ -8,6 +8,7 @@ import {
   getSessionState,
   getStatusBadge,
 } from '../../utils/sessionStateHelper';
+import { GameSectionHeader } from '../../components/GameUI';
 
 export default function JoinedSpheresPage() {
   const { user } = useAuth();
@@ -56,42 +57,40 @@ export default function JoinedSpheresPage() {
   return (
     <div className="w-full p-8">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <h1 className="text-3xl font-black text-[#e2e8f0] mb-6">
-          Joined Spheres
-        </h1>
+        <GameSectionHeader title="JOINED SPHERES" />
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-40 bg-[#13131f] rounded-xl border border-[#1e1e2f] animate-pulse"
+                className="h-40 bg-white border-4 border-black rounded-lg animate-pulse shadow-[4px_4px_0px_rgba(0,0,0,1)]"
               ></div>
             ))}
           </div>
         ) : error ? (
-          <div className="p-6 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400">
+          <div className="mt-6 p-6 bg-red-200 border-4 border-red-500 rounded-lg font-bold">
             {error}
           </div>
         ) : spheres.length === 0 ? (
-          <div className="p-12 bg-[#13131f] rounded-xl border border-[#1e1e2f] text-center">
-            <LogIn
-              size={48}
-              className="mx-auto text-[#64748b] opacity-30 mb-4"
-            />
-            <p className="text-[#64748b] text-lg">No spheres joined yet</p>
-            <p className="text-sm text-[#64748b] mt-2">
+          <div className="mt-6 p-12 bg-white border-4 border-black rounded-lg shadow-[6px_6px_0px_rgba(0,0,0,1)] text-center">
+            <LogIn size={48} className="mx-auto text-black opacity-30 mb-4" />
+            <p className="text-black font-bold uppercase">
+              No spheres joined yet
+            </p>
+            <p className="text-sm text-black font-bold mt-2">
               Join a sphere to take tests
             </p>
             <button
               onClick={() => navigate('/join')}
-              className="mt-4 px-6 py-2 bg-[#6366f1] text-white rounded-lg font-semibold hover:bg-[#6366f1]/80 transition-all"
+              className="mt-4 px-6 py-2 game-box game-btn-primary"
             >
-              Join Sphere
+              <div className="game-box-shadow" />
+              <div className="game-box-content text-xs">Join Sphere</div>
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
             {spheres.map((sphere) => (
               <JoinedCard
                 key={sphere._id}
@@ -112,35 +111,35 @@ function JoinedCard({ sphere, onNavigate, statusBadge }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-5 bg-[#13131f] border border-[#1e1e2f] rounded-xl hover:border-[#6366f1]/50 transition-all space-y-4"
+      whileHover={{ y: -4 }}
+      className="p-6 bg-white border-4 border-black rounded-lg shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] transition-all space-y-4"
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-bold text-[#e2e8f0] line-clamp-2">
+          <h3 className="text-lg font-black text-black line-clamp-2 uppercase">
             {sphere.title}
           </h3>
-          <p className="text-xs text-[#64748b] mt-1">
-            Hosted by{' '}
-            <span className="text-[#6366f1]">{sphere.createdBy.name}</span>
+          <p className="text-xs font-bold mt-1 text-black">
+            By <span className="text-yellow-600">{sphere.createdBy.name}</span>
           </p>
         </div>
         <span
-          className={`shrink-0 inline-block px-2 py-1 text-xs font-bold rounded ${statusBadge.color}`}
+          className={`shrink-0 inline-block px-3 py-1 text-xs font-black rounded-lg border-2 border-black ${statusBadge.color}`}
         >
           {statusBadge.text}
         </span>
       </div>
 
       {/* Stats */}
-      <div className="space-y-2 text-sm">
-        <div className="flex items-center gap-2 text-[#64748b]">
-          <span className="font-mono bg-[#0a0a0f] px-2 py-1 rounded text-[#6366f1] text-xs font-bold">
+      <div className="space-y-2 text-sm font-bold">
+        <div className="flex items-center gap-2 text-black">
+          <span className="font-mono bg-yellow-200 border-2 border-black px-2 py-1 rounded text-black text-xs font-black">
             {sphere.gameCode}
           </span>
         </div>
 
-        <div className="flex items-center gap-4 text-[#64748b]">
+        <div className="flex items-center gap-4 text-black">
           <div className="flex items-center gap-1">
             <Users size={14} />
             <span>{sphere.participants.length} participants</span>
@@ -149,19 +148,19 @@ function JoinedCard({ sphere, onNavigate, statusBadge }) {
       </div>
 
       {/* Score & Rank (Placeholders) */}
-      <div className="grid grid-cols-2 gap-3 p-3 bg-[#0a0a0f] rounded-lg text-center text-sm">
+      <div className="grid grid-cols-2 gap-3 p-3 bg-yellow-100 border-2 border-black rounded-lg text-center text-sm font-black">
         <div>
-          <p className="text-xs text-[#64748b] mb-1">Your Score</p>
-          <p className="font-bold text-[#6366f1]">—</p>
+          <p className="text-xs text-black mb-1">YOUR SCORE</p>
+          <p className="font-black text-black">—</p>
         </div>
         <div>
-          <p className="text-xs text-[#64748b] mb-1">Your Rank</p>
-          <p className="font-bold text-[#6366f1]">—</p>
+          <p className="text-xs text-black mb-1">YOUR RANK</p>
+          <p className="font-black text-black">—</p>
         </div>
       </div>
 
       {/* Date */}
-      <div className="flex items-center gap-2 text-xs text-[#64748b]">
+      <div className="flex items-center gap-2 text-xs font-bold text-black">
         <span>
           {sphere.startTime
             ? new Date(sphere.startTime).toLocaleDateString()
@@ -171,11 +170,15 @@ function JoinedCard({ sphere, onNavigate, statusBadge }) {
 
       {/* Button */}
       <motion.button
-        whileHover={{ scale: 1.02 }}
+        whileHover={{ y: -2 }}
         onClick={() => onNavigate(`/dashboard/sphere/${sphere._id}/analytics`)}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[#6366f1]/20 text-[#6366f1] rounded-lg text-sm font-semibold hover:bg-[#6366f1]/30 transition-all border-t border-[#1e1e2f] pt-3 mt-3"
+        className="w-full game-box game-btn-primary border-t-4 border-t-black pt-3 mt-3"
       >
-        <BarChart3 size={14} /> View Leaderboard
+        <div className="game-box-shadow" />
+        <div className="game-box-content text-xs gap-2">
+          <BarChart3 size={14} />
+          View Leaderboard
+        </div>
       </motion.button>
     </motion.div>
   );

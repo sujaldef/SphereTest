@@ -36,14 +36,27 @@ export default function LiveTestUI({
   // Loading state
   if (loading) {
     return (
-      <div className="w-full h-screen bg-[#0a0a0f] flex items-center justify-center">
+      <div className="w-full h-screen global-bg flex items-center justify-center">
         <motion.div
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 1, repeat: Infinity }}
           className="flex flex-col items-center gap-4"
         >
-          <Loader size={48} className="text-[#6366f1] animate-spin" />
-          <p className="text-[#64748b] text-sm">Loading test...</p>
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            className="flex gap-2"
+          >
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="w-4 h-4 bg-black border border-black rounded-full shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+              ></div>
+            ))}
+          </motion.div>
+          <p className="text-black text-sm font-bold uppercase">
+            Loading test...
+          </p>
         </motion.div>
       </div>
     );
@@ -52,16 +65,18 @@ export default function LiveTestUI({
   // Error state
   if (error) {
     return (
-      <div className="w-full h-screen bg-[#0a0a0f] flex items-center justify-center p-8">
-        <div className="max-w-2xl text-center">
+      <div className="w-full h-screen global-bg flex items-center justify-center p-8">
+        <div className="max-w-2xl w-full text-center bg-white border-4 border-black rounded-lg p-8 shadow-[8px_8px_0px_rgba(0,0,0,1)]">
           <AlertCircle size={48} className="text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-2">Test Error</h2>
-          <p className="text-[#64748b] mb-4">{error}</p>
+          <h2 className="text-2xl font-black text-black mb-2 uppercase">
+            TEST ERROR
+          </h2>
+          <p className="text-black/50 mb-4 font-bold">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-2 bg-[#6366f1] text-white rounded-lg font-semibold hover:bg-[#4f46e5]"
+            className="px-6 py-2 bg-yellow-300 border-2 border-black text-black rounded-lg font-bold hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all"
           >
-            Retry
+            RETRY
           </button>
         </div>
       </div>
@@ -71,44 +86,49 @@ export default function LiveTestUI({
   // Session ended - Results state
   if (sessionEnded) {
     return (
-      <div className="w-full h-screen bg-[#0a0a0f] flex items-center justify-center p-8">
+      <div className="w-full h-screen global-bg flex items-center justify-center p-8">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-2xl w-full text-center"
+          className="max-w-2xl w-full text-center bg-white border-4 border-black rounded-lg p-8 shadow-[8px_8px_0px_rgba(0,0,0,1)]"
         >
           <div className="text-6xl mb-4">🎉</div>
-          <h2 className="text-4xl font-black text-[#e2e8f0] mb-2">
-            Test Complete!
+          <h2 className="text-4xl font-black text-black mb-2 uppercase">
+            TEST COMPLETE!
           </h2>
-          <p className="text-[#64748b] mb-8">Thanks for participating!</p>
+          <p className="text-black/50 mb-8 font-bold uppercase">
+            Thanks for participating!
+          </p>
 
           {/* Final Leaderboard */}
-          <div className="bg-[#13131f] border border-[#1e1e2f] rounded-xl p-6">
-            <h3 className="text-lg font-black text-[#e2e8f0] mb-4">
-              Final Rankings
+          <div className="bg-yellow-300 border-4 border-black rounded-lg p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+            <h3 className="text-lg font-black text-black mb-4 uppercase">
+              FINAL RANKINGS
             </h3>
             <div className="space-y-2">
               {leaderboard.slice(0, 5).length > 0 ? (
                 leaderboard.slice(0, 5).map((entry, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between p-3 bg-[#0a0a0f] rounded"
+                    className="flex items-center justify-between p-3 bg-white border-2 border-black rounded font-bold text-black"
                   >
-                    <span className="text-[#e2e8f0] font-bold flex items-center gap-2">
+                    <span className="flex items-center gap-2">
                       {idx === 0 && <span className="text-lg">🥇</span>}
                       {idx === 1 && <span className="text-lg">🥈</span>}
-                      {idx === 2 && <span className="text-lg">🥉</span>}#
-                      {idx + 1} {entry.name}
+                      {idx === 2 && <span className="text-lg">🥉</span>}
+                      {idx > 2 && (
+                        <span className="text-lg font-black">#{idx + 1}</span>
+                      )}{' '}
+                      {entry.name}
                     </span>
-                    <span className="text-[#6366f1] font-bold">
-                      {entry.score} pts
+                    <span className="bg-yellow-200 border border-black px-2 py-1 rounded">
+                      {entry.score} PTS
                     </span>
                   </div>
                 ))
               ) : (
-                <p className="text-[#64748b] text-sm">
-                  No final rankings available
+                <p className="text-black/50 text-sm font-bold">
+                  NO FINAL RANKINGS AVAILABLE
                 </p>
               )}
             </div>
@@ -120,7 +140,7 @@ export default function LiveTestUI({
 
   // Active test state
   return (
-    <div className="w-full h-screen flex bg-[#0a0a0f]">
+    <div className="w-full h-screen flex bg-white/50 global-bg gap-2 p-2">
       {/* Main Test Area */}
       <div className="flex-1 p-8 overflow-y-auto">
         <motion.div
@@ -128,22 +148,22 @@ export default function LiveTestUI({
           animate={{ opacity: 1 }}
           className="max-w-4xl mx-auto"
         >
-          <div className="bg-[#13131f] border border-[#1e1e2f] rounded-xl p-8">
+          <div className="bg-white border-4 border-black rounded-lg p-8 shadow-[8px_8px_0px_rgba(0,0,0,1)]">
             {/* Question Header */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#6366f1]/20 rounded-full mb-6">
-              <BookOpen size={14} className="text-[#6366f1]" />
-              <span className="text-xs font-bold text-[#6366f1]">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-300 border-2 border-black rounded-full mb-6 font-bold text-black uppercase">
+              <BookOpen size={14} className="text-black" />
+              <span className="text-xs font-black text-black">
                 Question {currentQuestionIndex + 1} of {totalQuestions}
               </span>
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full bg-[#0a0a0f] rounded-full h-2 mb-8">
+            <div className="w-full bg-yellow-100 border-2 border-black rounded-full h-3 mb-8 shadow-[2px_2px_0px_rgba(0,0,0,1)]">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${progressPercentage}%` }}
                 transition={{ duration: 0.5 }}
-                className="h-full bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-full"
+                className="h-full bg-yellow-400 border-r-2 border-black rounded-full"
               />
             </div>
 
@@ -156,7 +176,7 @@ export default function LiveTestUI({
                 className="space-y-6"
               >
                 {/* Question Text */}
-                <h2 className="text-2xl font-black text-[#e2e8f0]">
+                <h2 className="text-2xl font-black text-black uppercase">
                   {currentQuestion.questionText}
                 </h2>
 
@@ -168,15 +188,13 @@ export default function LiveTestUI({
                         key={idx}
                         whileHover={{ scale: 1.02 }}
                         onClick={() => onAnswerChange(idx)}
-                        className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
+                        className={`w-full p-4 text-left rounded-lg border-4 transition-all font-bold ${
                           answers[currentQuestion._id] === idx
-                            ? 'border-[#6366f1] bg-[#6366f1]/20'
-                            : 'border-[#1e1e2f] bg-[#0a0a0f] hover:border-[#6366f1]/50'
+                            ? 'border-black bg-yellow-200 shadow-[4px_4px_0px_rgba(0,0,0,1)] text-black'
+                            : 'border-black bg-white hover:bg-yellow-50 text-black'
                         }`}
                       >
-                        <span className="font-semibold text-[#e2e8f0]">
-                          {option}
-                        </span>
+                        <span className="font-bold uppercase">{option}</span>
                       </motion.button>
                     ))}
                   </div>
@@ -189,7 +207,7 @@ export default function LiveTestUI({
                     placeholder="Enter your answer..."
                     value={answers[currentQuestion._id] || ''}
                     onChange={(e) => onAnswerChange(e.target.value)}
-                    className="w-full px-4 py-3 bg-[#0a0a0f] border border-[#1e1e2f] rounded-lg text-[#e2e8f0] focus:outline-none focus:border-[#6366f1] transition-colors"
+                    className="w-full px-4 py-3 bg-white border-2 border-black rounded-lg text-black font-bold focus:outline-none focus:shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all placeholder:text-black/50 uppercase"
                   />
                 )}
 
@@ -204,10 +222,10 @@ export default function LiveTestUI({
                         key={option.label}
                         whileHover={{ scale: 1.05 }}
                         onClick={() => onAnswerChange(option.value)}
-                        className={`flex-1 p-4 font-bold rounded-lg border-2 transition-all ${
+                        className={`flex-1 p-4 font-bold rounded-lg border-4 transition-all uppercase ${
                           answers[currentQuestion._id] === option.value
-                            ? 'border-[#6366f1] bg-[#6366f1]/20 text-[#6366f1]'
-                            : 'border-[#1e1e2f] bg-[#0a0a0f] text-[#e2e8f0] hover:border-[#6366f1]/50'
+                            ? 'border-black bg-yellow-200 text-black shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                            : 'border-black bg-white text-black hover:bg-yellow-50'
                         }`}
                       >
                         {option.label}
@@ -219,18 +237,18 @@ export default function LiveTestUI({
                 {/* Question Type: CODE */}
                 {currentQuestion.type === 'CODE' && (
                   <div className="space-y-3">
-                    <p className="text-sm text-[#64748b]">
+                    <p className="text-sm text-black font-bold uppercase">
                       Language:{' '}
-                      <span className="text-[#6366f1] font-semibold">
+                      <span className="text-black font-black">
                         {currentQuestion.codeLanguage || 'JavaScript'}
                       </span>
                     </p>
                     {currentQuestion.starterCode && (
-                      <div className="bg-[#0a0a0f] p-4 rounded-lg border border-[#1e1e2f]">
-                        <p className="text-xs text-[#64748b] mb-2">
-                          Starter Code:
+                      <div className="bg-yellow-50 p-4 rounded-lg border-2 border-black">
+                        <p className="text-xs text-black mb-2 font-bold uppercase">
+                          STARTER CODE:
                         </p>
-                        <pre className="text-xs text-[#6366f1] overflow-x-auto font-mono">
+                        <pre className="text-xs text-black overflow-x-auto font-mono bg-white border border-black p-2 rounded">
                           {currentQuestion.starterCode}
                         </pre>
                       </div>
@@ -239,7 +257,7 @@ export default function LiveTestUI({
                       placeholder="Write your code here..."
                       value={answers[currentQuestion._id] || ''}
                       onChange={(e) => onAnswerChange(e.target.value)}
-                      className="w-full h-48 px-4 py-3 bg-[#0a0a0f] border border-[#1e1e2f] rounded-lg text-[#e2e8f0] font-mono text-sm focus:outline-none focus:border-[#6366f1] transition-colors"
+                      className="w-full h-48 px-4 py-3 bg-white border-2 border-black rounded-lg text-black font-mono text-sm focus:outline-none focus:shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all"
                     />
                   </div>
                 )}
@@ -250,14 +268,14 @@ export default function LiveTestUI({
                   whileTap={{ scale: 0.98 }}
                   onClick={onSubmitAnswer}
                   disabled={submitted}
-                  className="w-full mt-8 px-6 py-3 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
+                  className="w-full mt-8 px-6 py-3 bg-yellow-300 text-black font-black rounded-lg border-4 border-black disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all uppercase shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] disabled:shadow-none"
                 >
                   <Send size={18} />
-                  {submitted ? 'Submitted...' : 'Submit Answer'}
+                  {submitted ? 'SUBMITTED...' : 'SUBMIT ANSWER'}
                 </motion.button>
 
                 {submitted && (
-                  <p className="text-center text-sm text-[#6366f1] animate-pulse">
+                  <p className="text-center text-sm text-black font-bold uppercase animate-pulse">
                     ✓ Answer submitted. Loading next question...
                   </p>
                 )}
@@ -268,12 +286,14 @@ export default function LiveTestUI({
       </div>
 
       {/* Leaderboard Sidebar */}
-      <div className="w-80 bg-[#0f0f1a] border-l border-[#1e1e2f] p-6 overflow-y-auto">
-        <div className="sticky top-0 bg-[#0f0f1a] pb-4 mb-4 border-b border-[#1e1e2f]">
-          <h3 className="text-lg font-black text-[#e2e8f0]">
-            📊 Live Leaderboard
+      <div className="w-80 bg-white border-l-4 border-black p-6 overflow-y-auto shadow-[-4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="sticky top-0 bg-white pb-4 mb-4 border-b-4 border-black">
+          <h3 className="text-lg font-black text-black uppercase">
+            📊 LIVE LEADERBOARD
           </h3>
-          <p className="text-xs text-[#64748b] mt-1">Real-time rankings</p>
+          <p className="text-xs text-black/50 mt-1 font-bold uppercase">
+            Real-time rankings
+          </p>
         </div>
 
         <div className="space-y-2">
@@ -284,18 +304,18 @@ export default function LiveTestUI({
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className={`flex items-center justify-between p-3 rounded-lg transition-all ${
+                className={`flex items-center justify-between p-3 rounded-lg transition-all border-2 border-black font-bold ${
                   i === 0
-                    ? 'bg-[#6366f1]/20 border border-[#6366f1] shadow-lg shadow-[#6366f1]/10'
-                    : 'bg-[#13131f] border border-[#1e1e2f]'
+                    ? 'bg-yellow-300 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                    : 'bg-white hover:bg-yellow-50'
                 }`}
               >
                 <div className="flex items-center gap-2 flex-1">
                   <div
-                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black border border-black ${
                       i === 0
-                        ? 'bg-[#6366f1] text-white'
-                        : 'bg-[#1e1e2f] text-[#64748b]'
+                        ? 'bg-yellow-200 text-black'
+                        : 'bg-white text-black border-2 border-black'
                     }`}
                   >
                     {i === 0 && '🥇'}
@@ -303,16 +323,18 @@ export default function LiveTestUI({
                     {i === 2 && '🥉'}
                     {i > 2 && i + 1}
                   </div>
-                  <span className="text-sm font-semibold text-[#e2e8f0] truncate">
+                  <span className="text-sm font-black text-black truncate uppercase">
                     {entry.name}
                   </span>
                 </div>
                 <span
-                  className={`text-sm font-bold ${
-                    i === 0 ? 'text-[#6366f1]' : 'text-[#64748b]'
+                  className={`text-sm font-black ${
+                    i === 0
+                      ? 'text-black bg-white px-2 py-1 rounded border border-black'
+                      : 'text-black'
                   }`}
                 >
-                  {entry.score} pts
+                  {entry.score} PTS
                 </span>
               </motion.div>
             ))
@@ -322,7 +344,7 @@ export default function LiveTestUI({
               animate={{ opacity: 1 }}
               className="text-center py-8"
             >
-              <p className="text-sm text-[#64748b]">
+              <p className="text-sm text-black/50 font-bold uppercase">
                 Waiting for first submissions...
               </p>
             </motion.div>
