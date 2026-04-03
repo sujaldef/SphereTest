@@ -1,0 +1,488 @@
+SphereTest Working Status (Detailed)
+Date: 2026-04-02 | Last Updated: ✅ Hotfix #6 COMPLETE - Late Join Session Transition
+
+============================================================
+A) WHAT IS WORKING RIGHT NOW
+============================================================
+
+BACKEND (fully functional)
+1. Server startup pipeline:
+   - env load
+   - JWT_SECRET validation (fails fast if missing)
+   - DB connect
+   - express app + socket server creation
+
+2. Authentication APIs:
+   - POST /api/auth/register (with validation: name, email, password min 6, role enum)
+   - POST /api/auth/login (with validation: email, password)
+   - GET /api/auth/me (token required)
+   - All routes use bcrypt for password hashing
+
+3. User Management APIs:
+   - GET /api/users (token required + auth middleware)
+   - POST /api/users (token + admin role required)
+
+4. Sphere APIs:
+   - POST /api/spheres (token required, with validation, accepts optional endTime field)
+   - GET /api/spheres
+   - GET /api/spheres/:id
+   - GET /api/spheres/code/:code
+   - POST /api/spheres/join (token required, validates session timing: rejects join if session ended)
+     * Session timing: Uses explicit endTime if provided, falls back to startTime + duration
+     * On-demand spheres (no startTime): always joinable until full
+     * Scheduled spheres (startTime provided): joinable before endTime (can pre-join)
+     * After endTime: join rejected with "Session has ended"
+   - DELETE /api/spheres/:id (creator only, 403 if not owner)
+   - Session state now computed consistently across frontend and backend
+
+5. Question APIs:
+   - POST /api/questions (token required, with validation)
+   - GET /api/questions/:sphereId
+   - PUT /api/questions/:id (token required, creator only, with validation)
+   - DELETE /api/questions/:id (token required, creator only)
+
+6. Mongo schemas enforce base constraints and relationships
+
+7. Socket.io real-time events with JWT authentication:
+   - Server: Middleware verifies JWT token on handshake, rejects unauthenticated connections
+   - Attaches socket.userId and socket.user to authenticated sockets
+   - Events: join_sphere, start_session, submit_answer, progress_update, session_end, leaderboard_update, answer_received
+   - Answer scoring: MCQ/BOOL binary, TEXT/CODE with partial credit
+   - Only authenticated users can emit events
+
+8. Seed script (seedData.js) initializes sample data
+
+9. Input validation layer:
+   - register: name (required, min 2), email (valid), password (min 6), role (enum)
+   - login: email (valid), password (required)
+   - create sphere: title (required), type (enum), duration (number, min 1)
+   - create question: questionText (required), type (enum), sphereId (required)
+   - All return 400 with descriptive errors on validation failure
+
+FRONTEND (end-to-end functional with Part 0 routing restructure)
+1. Router navigation (Part 0 NEW):
+   - / (landing - smart redirect to /dashboard or /login based on token)
+   - /login (register + login)
+   - /dashboard (protected, DashboardLayout with sidebar)
+     - /dashboard (DashboardHome - welcome, stats, quick actions)
+     - /dashboard/create (Createsphere wrapped)
+     - /dashboard/join (Joinsphere wrapped)
+     - /dashboard/my-spheres (list created spheres)
+     - /dashboard/joined (list joined spheres)
+     - /dashboard/leaderboard (global leaderboard)
+     - /dashboard/sphere/:id/questions (question studio)
+     - /dashboard/sphere/:id/lobby (waiting room)
+     - /dashboard/sphere/:id/test (live test interface)
+     - /dashboard/sphere/:id/analytics (sphere analytics)
+   - All /dashboard routes protected with ProtectedRoute (redirects to /login)
+   - OLD routes (/create, /join, /questions) retired
+
+2. Landing page (Part 0 UPDATED):
+   - Hero, Features, Demo sections
+   - ALL CTA buttons now smart-redirect:
+     - If token in localStorage → navigate to /dashboard
+     - If no token → navigate to /login
+   - Header "Log In" and "Sign Up" buttons use same logic
+   - Hero "Create" button uses handleCreateRedirect()
+   - FinalCTA "Launch" button uses handleCreateRedirect()
+   - No functional logic on landing itself
+
+3. Dashboard Layout (Part 0 NEW):
+   - DashboardLayout.jsx: Sidebar + <Outlet /> for nested routes
+   - Sidebar shows: user avatar, name, email
+   - Sidebar nav: Home, Create Sphere, Join Sphere, My Spheres, Joined Spheres, Leaderboard
+   - Sidebar active state: left border 3px #6366f1 + bg rgba(99,102,241,0.1)
+   - Dark theme: bg-[#0a0a0f], sidebar bg-[#0f0f1a], cards bg-[#13131f], accent #6366f1
+   - Logout button clears token + localStorage, navigates to /
+   - Responsive mobile sidebar toggle
+
+4. Dashboard Home (Part 0B FULLY WIRED):
+   - Fetches GET /api/spheres on mount
+   - Client-side filters for "My Spheres" vs "Joined Spheres" stats
+   - Calculates upcoming/past sphere counts
+   - Displays animated loading skeletons while fetching
+   - Shows stats cards with real values:
+     * Spheres Created: count of createdBy._id === currentUser._id
+     * Joined: count where participants includes currentUser._id
+     * Avg Score: placeholder "—"
+     * Upcoming: count where startTime > now
+   - Renders UpcomingCard components for each upcoming sphere with:
+     * Sphere title
+     * Game code (monospace badge)
+     * Participant count / max capacity
+     * Start date
+   - Quick action buttons: Create → /dashboard/create, Join → /dashboard/join
+   - Empty state with CTA if no upcoming sessions
+   - API data updates immediately on component mount
+
+5. My Spheres Page (Part 0B FULLY WIRED):
+   - Fetches GET /api/spheres on mount
+   - Filters by createdBy._id === currentUser._id
+   - Loading skeleton animation while fetching
+   - Displays SphereCard grid for each created sphere with:
+     * Title + status badge (DRAFT/UPCOMING/ENDED)
+     * Game code (monospace, copy-friendly)
+     * Type and difficulty badges (color-coded)
+     * Participant count / max capacity
+     * Start date
+     * Three action buttons:
+       - "Manage Questions" button → navigates to /dashboard/sphere/:id/questions
+       - "View Analytics" button → navigates to /dashboard/sphere/:id/analytics
+       - "Delete" button → calls DELETE /api/spheres/:id with confirm dialog, removes from list
+   - Error state display
+   - Empty state with CTA to create new sphere
+   - Fully functional CRUD (create via /dashboard/create, read/list here, update via manage, delete here)
+
+6. Joined Spheres Page (Part 0B FULLY WIRED):
+   - Fetches GET /api/spheres on mount
+   - Filters by:
+     * participants.some(p => p._id === currentUser._id) AND
+     * createdBy._id !== currentUser._id (excludes created spheres)
+   - Loading skeleton animation while fetching
+   - Displays JoinedCard grid with:
+     * Sphere title
+     * Host name (createdBy.name)
+     * Status badge (PENDING/UPCOMING/ENDED)
+     * Game code (monospace badge)
+     * Participant count
+     * Your Score and Your Rank placeholders (animated pulse)
+     * Session date
+     * "View Leaderboard" button → /dashboard/sphere/:id/analytics
+   - Error state display
+   - Empty state with CTA to join new sphere
+   - Ready for scoring implementation (placeholders prepared)
+
+7. SphereLobbyPage (FULLY FUNCTIONAL - Hotfix #3, Enhanced with Hotfix #5-6):
+   - Fetches sphere details with participant count from API
+   - Connects socket to server on mount
+   - Admin sees: "Start Session" button + participant list
+   - Student sees: waiting animation + participant count + sphere title
+   
+   AUTO-START LOGIC (Hotfix #5):
+   - Shows countdown timer: "Auto-starting in X seconds" (visible to all users)
+   - At T=0, session auto-starts and redirects everyone to test page
+   - Admin can click "Start Now" anytime (even before scheduled time)
+   - For on-demand sessions (no startTime): admin manually starts, no countdown
+   
+   LATE JOIN HANDLING (Hotfix #6 - NEW):
+   - Detects if session is already active when user joins
+   - Shows: "Joining active session..." green indicator
+   - Automatically redirects to test page after 1.5 second transition
+   - Emits join_sphere to register in real-time room
+   - Handles: page refresh, late arrivals, users joining after startTime
+   
+   - Emits start_session event (auto-trigger or admin click)
+   - Listens to session_started socket event
+   - Automatically redirects both admin/student to /dashboard/sphere/:id/test on session start
+   - Error handling and loading states
+   - Live participant tracking
+
+8. LiveTestPage (FULLY FUNCTIONAL - Hotfix #3):
+   - Fetches all questions from the sphere via getQuestionsBySphere() API
+   - Displays questions one-at-a-time with smooth transitions
+   - Supports all 4 question types with proper UI:
+     * MCQ: Multiple choice buttons with hover/selection highlighting
+     * TEXT: Text input field with placeholder
+     * BOOL: True/False toggle buttons
+     * CODE: Code textarea with language display and starter code preview
+   - Progress bar showing current question / total questions
+   - Real-time answer submission via socket emitSubmitAnswer()
+   - Live leaderboard sidebar showing current rankings
+   - Listens to leaderboard_update socket event for real-time ranking updates
+   - Listens to session_ended socket event for test completion
+   - Shows final rankings and completion screen on test end
+   - Answer tracking in local state for form persistence
+
+9. JoinSphere Flow (ENHANCED - Hotfix #3):
+   - On game code submit: checks if user is already authenticated via useAuth()
+   - If token exists: joins directly (skips registration step)
+   - If no token: prompts for register/login, then joins
+   - Prevents redundant credential collection for authenticated users
+   - Error handling: invalid code, sphere full, already joined
+   - Smooth transitions between code entry → join → waiting room
+
+============================================================
+B) DASHBOARD STUB PAGES (Part 0 NEW):
+   - Error messages from API displayed
+   - On success: navigate to /dashboard
+
+7. Create Sphere (Part 2 wired):
+   - Animated multi-step form
+   - Captures title, description, type, duration, difficulty, security settings
+   - Form submit calls createSphere() API
+   - Stores sphereId and gameCode in localStorage
+   - On success: redirect to /dashboard/sphere/:id/questions
+   - Error messages displayed
+
+8. Join Sphere (Part 2 wired):
+   - Input field for game code
+   - Submit calls getSphereByCode(code)
+   - Shows sphere details (title, participants, maxPlayers)
+   - Join button calls joinSphere()
+   - Handles errors: invalid code, sphere full, already joined
+   - On success: navigates to /dashboard/sphere/:id/lobby (waiting state)
+
+9. Question Studio (Part 2 wired):
+   - Loads sphereId from URL params (/dashboard/sphere/:id/questions)
+   - On mount: calls getQuestionsBySphere(sphereId)
+   - Displays questions in list/edit UI
+   - Add button: creates new question via createQuestion(), UI updates immediately
+   - Edit button: updates question via updateQuestion()
+   - Delete button: deletes question via deleteQuestion()
+   - BACK button (header): confirms exit, navigates to /dashboard
+   - SAVE PROGRESS button (left + right footer): validates questions, saves to localStorage, shows confirmation
+   - READY TO START button (right footer): validates >=1 question, stores sphere metadata, navigates to /dashboard/sphere/:id/lobby
+
+10. Auth Context (Part 2):
+    - Stores user, token, loading state
+    - login(token): sets token in context + localStorage
+    - logout(): clears both, used by dashboard sidebar
+    - On mount: rehydrates user by calling getMe()
+    - Used by ProtectedRoute to check authentication
+
+11. Socket Client (Part 3):
+    - connectSocket(token): establishes Socket.io connection with auth
+    - emitStartSession, emitSubmitAnswer, emitSessionEnd: send events
+    - onLeaderboardUpdate, onSessionStarted, onSessionEnded, onAnswerReceived, onProgressUpdate: listen
+
+12. Build succeeds with Vite:
+    - No React StrictMode (removed to fix Framer Motion issues)
+    - socket.io-client installed and available
+    - All imports resolve correctly
+
+13. Sphere Analytics Page (Part 0C FULLY WIRED):
+    - Route: /dashboard/sphere/:id/analytics
+    - Fetches sphere data with populated participants + createdBy
+    - Fetches questions for that sphere
+    - Displays 4 stat cards: Total Participants, Questions, Avg Score (placeholder), Duration
+    - Renders Participants Table: name, email, join time
+    - Renders Questions Table: #, question text, type badge, correct answer
+    - Placeholder Leaderboard section: "Session not started yet"
+    - Export button (placeholder console.log, PDF/CSV coming later)
+    - Loading skeleton animation during fetch
+    - Error state handling
+    - Accessible by: anyone (sphere analytics can be viewed by participants/admin)
+
+14. Global Leaderboard Page (Part 0C FULLY WIRED):
+    - Route: /dashboard/leaderboard
+    - Fetches all spheres from GET /api/spheres on mount
+    - Sphere filter dropdown populated with all available spheres
+    - Main leaderboard table: Rank | Player | Sphere | Score | Date
+    - Uses mock leaderboard data with note: "Live data available after sessions run"
+    - Medal emojis for top 3 ranks (🥇 🥈 🥉)
+    - Player avatars with gradient backgrounds
+    - Score display with Zap icon (gold/amber color)
+    - Loading skeleton animation during fetch
+    - Empty state handling
+    - Ready to display real session results once Part 5 scoring is complete
+
+
+============================================================
+B) WHAT IS PARTIALLY WORKING
+============================================================
+1. Socket events defined but not yet wired to UI pages
+   - Events are available on backend and frontend client
+   - Pages don't yet call emit functions or set up listeners
+   - Real-time test flow exists in code but not integrated into pages
+
+2. Real-time leaderboard logic
+   - Computed and emitted by server
+   - Not yet displayed in a "test taking" or "leaderboard" page
+
+
+============================================================
+C) WHAT IS NOT YET IMPLEMENTED
+============================================================
+1. Test taking/dashboard page
+   - Page to display questions during active session
+   - Answer submission UI
+   - Real-time leaderboard display
+   - Session control (for admin view)
+
+2. Proctoring features
+   - Face ID verification during test
+   - Tab switch detection enforcement
+   - Fullscreen enforcement
+   - Video/audio recording
+
+3. Answer scoring/grading
+   - Logic to check text/code answers for correctness
+   - Point calculations
+   - Score persistence to database
+
+4. User leaderboard history
+   - Sphere results storage
+   - Past performance tracking
+   - Certificate/completion tracking
+
+5. Frontend admin dashboard
+   - View all created spheres
+   - Edit sphere settings
+   - Manage participants
+   - View analytics
+
+6. WebRTC for live proctoring video feed
+
+
+============================================================
+D) NEXT STEPS TO MAKE FULLY FUNCTIONAL
+============================================================
+
+✅ COMPLETED (Hotfix #3):
+1. ✅ SphereLobbyPage socket integration (Issue #19)
+   - Fully wired with onSessionStarted listener
+   - Admin: "Start Session" button + participant list
+   - Student: waiting animation + participant count
+   - Auto-transitions students to test on session_started event
+
+2. ✅ LiveTestPage implementation (Issue #21)
+   - Display questions (MCQ/TEXT/BOOL/CODE)
+   - Input/submit answers → emitSubmitAnswer()
+   - Listen for session_started, leaderboard_update, session_ended
+   - Live leaderboard from socket events
+   - Progress bar + auto-advance between questions
+   - Final screen on session completion
+
+3. ✅ Socket listeners wired to components
+   - All socket events properly connected
+   - Cleanup listeners on unmount
+   - Real-time leaderboard updates working
+
+4. ✅ Joinsphere auth-aware flow (Issue #20)
+   - Checks if token exists before prompting register
+   - Skip registration if already authenticated
+   - Direct join for returning users
+
+5. ✅ Joinsphere error handling (Issue #22)
+   - Backend errors displayed in prominent UI
+   - Error extraction from API response
+   - No hard-coded error mappings
+   - All error scenarios handled
+
+✅ COMPLETED (Hotfix #4):
+6. ✅ Answer scoring/grading logic (Issue #23)
+   - MCQ: Answer index matches correctAnswer index (100 if match, 0 if not)
+   - BOOL: Boolean value comparison (100 if match, 0 if not)
+   - TEXT: Case-insensitive string match (100 full match, 50 substring match, 0 no match)
+   - CODE: Output string comparison (100 exact match, 30 partial match, 0 no match)
+   - Scoring computed asynchronously on answer submission
+   - Scores stored with answer data in sessionAnswers
+   - Leaderboard sorted by score (descending) then submission time
+   - Final rankings derive from actual scores, not hardcoded values
+   - Answer_received event includes score for frontend feedback
+   - Impact: Rankings now reflect answer correctness in real-time
+
+REMAINING PRIORITY TASKS:
+   - Create Result or Submission model
+   - Store answers, scores, timestamps
+   - Link to sphere and user
+
+MEDIUM PRIORITY:
+- Add proctoring UI/features
+- Create admin dashboard pages
+- Implement answer grading algorithms
+- Add user leaderboard/history pages
+- Add role-based admin features
+
+LONG-TERM:
+- WebRTC for video proctoring
+- ML-based cheating detection
+- Advanced analytics
+- Mobile app
+   - camera capture preview logic
+
+4. Create Sphere page has:
+   - 5-step wizard UI with full scheduling support (ENHANCED in latest fix):
+     * Step 1: Blueprint (title, type MCQ/Coding/Hybrid)
+     * Step 2: Mechanics & Schedule (ENHANCED):
+       - Duration slider (15-180 minutes)
+       - Max Players slider (10-500)
+       - Optional start date picker
+       - Optional start time picker
+       - Labeled as optional for immediate/on-demand sessions
+     * Step 3: Security settings (face ID, tab lock, fullscreen)
+     * Step 4: Review & Create (calls API with all collected data)
+     * Step 5: Game Code Display (shows 6-char code, copy button, share instructions)
+   - Successfully creates sphere via POST /api/spheres with complete data
+   - Sends startTime (ISO format) to backend if scheduled
+   - Correctly redirects to /dashboard/sphere/:id/questions after Step 5
+
+5. Join Sphere page has:
+   - game code entry UI
+   - simulated registration and monitoring prompts
+
+6. Questions page has:
+   - type selector (MCQ/CODE/TEXT/BOOL)
+   - in-memory question draft and question log
+   - expand/collapse details and delete in UI
+
+
+============================================================
+B) PARTIALLY WORKING
+============================================================
+1. Backend authorization exists but is incomplete in policy coverage:
+   - token verification works
+   - role checks and ownership checks are not consistently enforced
+
+2. Backend data validation exists but is basic:
+   - required field checks exist
+   - deeper schema/business validation is missing in multiple places
+
+3. Real-time support exists only as infrastructure baseline:
+   - room join exists
+   - no core real-time test events yet (start, submit, leaderboard updates)
+
+
+============================================================
+C) NOT WORKING / NOT WIRED YET (IN PRACTICE)
+============================================================
+✅ ALL FRONTEND→BACKEND INTEGRATION COMPLETE (Hotfixes #1-3)
+   - Centralized API client implemented (frontend/src/services/api.js)
+   - Auth token lifecycle fully implemented (AuthContext + protected routes)
+   - Create sphere persists with complete data → includes date/time scheduling
+   - Join flow fully operational with auth-aware flow and error handling
+   - Question builder wired to backend (all CRUD operations)
+   - Join sphere errors properly surfaced to UI with error handling layer
+
+REMAINING INCOMPLETE:
+1. Answer grading/scoring:
+   - Current: all answers = 100 points
+   - Need: type-specific comparison logic (MCQ index match, TEXT string match, CODE output test)
+   - Impact: rankings not based on correctness
+
+2. Session results persistence:
+   - Current: in-memory storage only
+   - Need: Result schema in DB, save answers to database
+   - Impact: no history, analytics, or leaderboard persistence
+
+3. Proctoring enforcement:
+   - Fields exist: faceId, fullscreen, tabSwitchDetection
+   - Not implemented: face ID verification, tab switch detection, fullscreen enforcement
+   - Impact: test integrity not enforced
+
+4. Camera/Face capture UI-only:
+   - Captured image not sent to backend
+   - No biometric pipeline on backend
+
+
+============================================================
+D) CURRENT DEVELOPMENT STAGE
+============================================================
+This project is in a hybrid stage:
+- Backend: MVP API skeleton ready for integration testing.
+- Frontend: polished prototype-level UX with mostly mocked interactions.
+
+Best stage label:
+"UI-complete prototype + API foundation, pending integration and production hardening."
+
+
+============================================================
+E) WHAT TO DO NEXT TO MAKE IT FULLY WORKING
+============================================================
+1. Add frontend API layer and connect all forms/actions.
+2. Implement auth context and protected routes in frontend.
+3. Add backend authorization policies for admin/creator ownership.
+4. Add backend validation and rate limiting.
+5. Implement real-time events for live sessions.
+6. Add tests (unit + API + basic frontend integration).
+7. Align and update README docs to actual project behavior.

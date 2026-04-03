@@ -1,7 +1,15 @@
-
 import { useNavigate } from 'react-router-dom';
 export default function Navbar() {
   const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+
+  const handleAuthRedirect = () => {
+    if (token) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-[#FFFDF0]/80 backdrop-blur-md border-b border-gray-200">
@@ -17,12 +25,12 @@ export default function Navbar() {
           <RetroButton
             text="Log In"
             variant="secondary"
-            onClick={() => navigate('/login')}
+            onClick={handleAuthRedirect}
           />
           <RetroButton
             text="Sign Up"
             variant="primary"
-            onClick={() => navigate('/login')}
+            onClick={handleAuthRedirect}
           />
         </div>
       </div>

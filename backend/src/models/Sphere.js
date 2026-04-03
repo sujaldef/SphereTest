@@ -36,9 +36,12 @@ const sphereSchema = new mongoose.Schema(
     startTime: {
       type: Date,
     },
+    endTime: {
+      type: Date,
+    },
     duration: {
       type: Number,
-      default: 60, // minutes
+      default: 60, // minutes (used if endTime not set)
     },
     maxPlayers: {
       type: Number,
@@ -63,6 +66,14 @@ const sphereSchema = new mongoose.Schema(
         default: false,
       },
     },
+    sessionStatus: {
+      type: String,
+      enum: ['DRAFT', 'UPCOMING', 'ACTIVE', 'ENDED'],
+      default: 'DRAFT', // DRAFT: no startTime, UPCOMING: waiting for startTime, ACTIVE: session started, ENDED: session completed
+    },
+    actualStartTime: {
+      type: Date, // Records when session actually started (via manual button or auto-start)
+    },
     createdAt: {
       type: Date,
       default: Date.now,
@@ -70,7 +81,7 @@ const sphereSchema = new mongoose.Schema(
   },
   {
     timestamps: { createdAt: false, updatedAt: true },
-  }
+  },
 );
 
 // Generate unique game code before saving (always generate if not provided)
@@ -88,7 +99,9 @@ sphereSchema.pre('save', async function (next) {
       for (let i = 0; i < 6; i++) {
         code += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-      const existing = await mongoose.model('Sphere').findOne({ gameCode: code });
+      const existing = await mongoose
+        .model('Sphere')
+        .findOne({ gameCode: code });
       if (!existing) {
         isUnique = true;
       }
@@ -107,4 +120,3 @@ sphereSchema.pre('save', async function (next) {
 const Sphere = mongoose.model('Sphere', sphereSchema);
 
 module.exports = Sphere;
-
