@@ -146,7 +146,7 @@ export default function DashboardHome() {
         <motion.button
           variants={itemVariants}
           whileHover={{ scale: 1.02 }}
-          onClick={() => navigate('/dashboard/join')}
+          onClick={() => navigate('/join')}
           className="p-6 bg-gradient-to-br from-[#1e293b] to-[#1e293b]/80 rounded-xl border border-[#64748b]/30 hover:border-[#6366f1] transition-all shadow-lg hover:shadow-[#6366f1]/20"
         >
           <LogIn size={32} className="mb-3" />
