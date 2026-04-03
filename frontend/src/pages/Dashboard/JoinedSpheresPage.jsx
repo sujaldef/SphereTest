@@ -84,7 +84,7 @@ export default function JoinedSpheresPage() {
               Join a sphere to take tests
             </p>
             <button
-              onClick={() => navigate('/dashboard/join')}
+              onClick={() => navigate('/join')}
               className="mt-4 px-6 py-2 bg-[#6366f1] text-white rounded-lg font-semibold hover:bg-[#6366f1]/80 transition-all"
             >
               Join Sphere

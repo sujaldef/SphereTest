@@ -28,7 +28,7 @@ export default function DashboardLayout() {
   const navItems = [
     { label: 'Home', icon: Home, path: '/dashboard' },
     { label: 'Create Sphere', icon: Plus, path: '/dashboard/create' },
-    { label: 'Join Sphere', icon: LogIn, path: '/dashboard/join' },
+    { label: 'Join Sphere', icon: LogIn, path: '/join' },
     { label: 'My Spheres', icon: Bookmark, path: '/dashboard/my-spheres' },
     { label: 'Joined Spheres', icon: Bookmark, path: '/dashboard/joined' },
     { label: 'Leaderboard', icon: Trophy, path: '/dashboard/leaderboard' },
