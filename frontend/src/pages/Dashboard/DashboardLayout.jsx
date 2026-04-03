@@ -13,6 +13,7 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+// import { GameButton } from '../../components/GameUI'; // Keeping your imports intact
 
 export default function DashboardLayout() {
   const { user, logout } = useAuth();
@@ -36,36 +37,38 @@ export default function DashboardLayout() {
   ];
 
   return (
-    <div className="h-screen w-full flex bg-[#0a0a0f] text-[#e2e8f0]">
+    <div className="h-screen w-full flex global-bg text-gray-900">
       {/* SIDEBAR */}
       <motion.aside
         initial={{ x: -300 }}
         animate={{ x: sidebarOpen ? 0 : -300 }}
-        className="w-64 bg-[#0f0f1a] border-r border-[#1e1e2f] flex flex-col z-40 fixed md:relative h-full"
+        className="w-64 bg-white border-r-2 border-black flex flex-col z-40 fixed md:relative h-full shadow-[2px_0px_0px_rgba(0,0,0,1)]"
       >
         {/* Header */}
-        <div className="p-6 border-b border-[#1e1e2f]">
-          <h1 className="text-2xl font-black text-[#6366f1] tracking-tight">
+        <div className="p-6 border-b-2 border-black bg-white">
+          <h1 className="text-3xl font-black text-black uppercase tracking-widest">
             Sphere
-            <span className="text-[#64748b]">Test</span>
+            <span className="text-yellow-500 block">Test</span>
           </h1>
         </div>
 
         {/* User Profile */}
-        <div className="p-4 border-b border-[#1e1e2f]">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#6366f1] rounded-full flex items-center justify-center font-bold text-[#0a0a0f]">
+        <div className="p-6 border-b-2 border-black bg-white">
+          <div className="flex items-center gap-3 p-3 bg-yellow-300 border-2 border-black rounded-lg shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+            <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center font-black text-white text-lg border-2 border-black">
               {user?.name?.[0]?.toUpperCase() || 'U'}
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-bold truncate">{user?.name}</p>
-              <p className="text-xs text-[#64748b] truncate">{user?.email}</p>
+              <p className="text-sm font-black uppercase truncate">
+                {user?.name}
+              </p>
+              <p className="text-xs font-bold truncate">{user?.email}</p>
             </div>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto p-4 space-y-2">
+        <nav className="flex-1 overflow-y-auto p-4 space-y-3 bg-white/50">
           {navItems
             .filter((item) => item.label !== 'Settings') // Hide settings for now
             .map((item) => {
@@ -78,28 +81,31 @@ export default function DashboardLayout() {
                 <motion.button
                   key={item.path}
                   onClick={() => navigate(item.path)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
+                  className={`w-full flex items-center gap-3 px-4 py-3 border-2 text-sm font-black uppercase tracking-wider transition-all ${
                     isActive
-                      ? 'bg-[#6366f1]/10 text-[#6366f1] border-l-3 border-[#6366f1] pl-4'
-                      : 'text-[#64748b] hover:text-[#e2e8f0] hover:bg-[#1e1e2f]'
+                      ? 'bg-yellow-300 border-black text-black rounded-lg shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                      : 'bg-white border-black text-black rounded-lg shadow-[1px_1px_0px_rgba(0,0,0,0.2)] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:bg-gray-50'
                   }`}
-                  whileHover={{ x: 4 }}
+                  whileHover={{ y: -1 }}
                 >
                   <Icon size={18} />
-                  {item.label}
+                  <span className="text-xs">{item.label}</span>
                 </motion.button>
               );
             })}
         </nav>
 
         {/* Logout Button */}
-        <div className="p-4 border-t border-[#1e1e2f]">
+        <div className="p-4 border-t-2 border-black bg-white">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-[#64748b] hover:text-red-400 hover:bg-red-400/10 transition-all"
+            className="w-full game-box game-btn-danger"
           >
-            <LogOut size={18} />
-            Logout
+            <div className="game-box-shadow" />
+            <div className="game-box-content text-white text-xs">
+              <LogOut size={16} />
+              <span>Logout</span>
+            </div>
           </button>
         </div>
       </motion.aside>
@@ -107,9 +113,13 @@ export default function DashboardLayout() {
       {/* Mobile Toggle */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="md:hidden absolute top-4 left-4 z-50 p-2 bg-[#6366f1] rounded-lg"
+        className="md:hidden absolute top-4 left-4 z-50 p-2 bg-yellow-300 border-2 border-black rounded-lg shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-none transition-all"
       >
-        {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+        {sidebarOpen ? (
+          <X size={20} className="text-black" />
+        ) : (
+          <Menu size={20} className="text-black" />
+        )}
       </button>
 
       {/* MAIN CONTENT */}

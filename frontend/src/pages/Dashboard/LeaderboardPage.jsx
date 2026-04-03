@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Zap } from 'lucide-react';
 import { getSpheres } from '../../services/api';
+import { GameSectionHeader } from '../../components/GameUI';
 
 // Mock leaderboard data for demonstration
 const mockLeaderboards = {
@@ -80,11 +81,14 @@ export default function LeaderboardPage() {
     return (
       <div className="w-full p-8">
         <div className="animate-pulse space-y-6">
-          <div className="h-12 bg-[#13131f] rounded w-48"></div>
-          <div className="h-10 bg-[#13131f] rounded w-64"></div>
+          <div className="h-12 bg-white border-4 border-black rounded w-48"></div>
+          <div className="h-10 bg-white border-4 border-black rounded w-64"></div>
           <div className="space-y-3">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-16 bg-[#13131f] rounded"></div>
+              <div
+                key={i}
+                className="h-16 bg-white border-4 border-black rounded"
+              ></div>
             ))}
           </div>
         </div>
@@ -98,14 +102,17 @@ export default function LeaderboardPage() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
+        className="inline-block bg-yellow-300 border-4 border-black rounded-lg shadow-[6px_6px_0px_rgba(0,0,0,1)] p-6"
       >
         <div className="flex items-center gap-3 mb-2">
-          <Trophy size={32} className="text-[#fbbf24]" />
-          <h1 className="text-3xl font-black text-[#e2e8f0]">
+          <Trophy size={32} className="text-black" />
+          <h1 className="text-3xl font-black text-black uppercase tracking-widest">
             Global Leaderboard
           </h1>
         </div>
-        <p className="text-[#64748b]">Top performers across all spheres</p>
+        <p className="text-black font-bold">
+          Top performers across all spheres
+        </p>
       </motion.div>
 
       {/* Filter Dropdown */}
@@ -115,13 +122,13 @@ export default function LeaderboardPage() {
         transition={{ delay: 0.1 }}
         className="flex items-center gap-4"
       >
-        <label className="text-[#64748b] font-bold text-sm">
+        <label className="text-black font-black uppercase text-sm">
           Filter by Sphere:
         </label>
         <select
           value={selectedSphere}
           onChange={(e) => handleSphereChange(e.target.value)}
-          className="px-4 py-2 bg-[#13131f] border border-[#6366f1]/30 rounded-lg text-[#e2e8f0] font-bold focus:outline-none focus:border-[#6366f1] transition-colors"
+          className="px-4 py-2 bg-white border-2 border-black rounded-lg text-black font-bold focus:outline-none shadow-[2px_2px_0px_rgba(0,0,0,1)]"
         >
           <option value="all">All Spheres</option>
           {spheres.map((sphere) => (
@@ -136,7 +143,7 @@ export default function LeaderboardPage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400"
+          className="p-4 bg-red-200 border-4 border-red-500 rounded-lg font-bold text-red-900"
         >
           {error}
         </motion.div>
@@ -146,25 +153,25 @@ export default function LeaderboardPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-[#13131f] border border-[#6366f1]/20 rounded-xl overflow-hidden"
+        className="bg-white border-4 border-black rounded-lg overflow-hidden shadow-[8px_8px_0px_rgba(0,0,0,1)]"
       >
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#0a0a0f] border-b border-[#6366f1]/20">
-                <th className="px-6 py-4 text-left text-[#64748b] font-bold text-sm">
+              <tr className="bg-yellow-300 border-b-4 border-black">
+                <th className="px-6 py-4 text-left text-black font-black text-sm uppercase">
                   Rank
                 </th>
-                <th className="px-6 py-4 text-left text-[#64748b] font-bold text-sm">
+                <th className="px-6 py-4 text-left text-black font-black text-sm uppercase">
                   Player
                 </th>
-                <th className="px-6 py-4 text-left text-[#64748b] font-bold text-sm">
+                <th className="px-6 py-4 text-left text-black font-black text-sm uppercase">
                   Sphere
                 </th>
-                <th className="px-6 py-4 text-left text-[#64748b] font-bold text-sm">
+                <th className="px-6 py-4 text-left text-black font-black text-sm uppercase">
                   Score
                 </th>
-                <th className="px-6 py-4 text-left text-[#64748b] font-bold text-sm">
+                <th className="px-6 py-4 text-left text-black font-black text-sm uppercase">
                   Date
                 </th>
               </tr>
@@ -177,9 +184,9 @@ export default function LeaderboardPage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className="border-b border-[#6366f1]/10 hover:bg-[#0a0a0f]/50 transition-colors"
+                    className="border-b-2 border-black hover:bg-yellow-50 transition-colors"
                   >
-                    <td className="px-6 py-4 text-[#e2e8f0] font-bold">
+                    <td className="px-6 py-4 text-black font-black">
                       <div className="flex items-center gap-2">
                         {entry.rank <= 3 && (
                           <span className="text-lg">
@@ -195,24 +202,24 @@ export default function LeaderboardPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-[#6366f1] to-[#8b5cf6] rounded-full flex items-center justify-center text-white font-bold text-sm">
+                        <div className="w-10 h-10 bg-yellow-300 border-2 border-black rounded-full flex items-center justify-center text-black font-black text-sm">
                           {entry.name.charAt(0).toUpperCase()}
                         </div>
-                        <span className="text-[#e2e8f0] font-bold">
+                        <span className="text-black font-black">
                           {entry.name}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-[#64748b] text-sm">
+                    <td className="px-6 py-4 text-black text-sm font-bold">
                       {entry.sphere}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2 text-[#fbbf24] font-black">
+                      <div className="flex items-center gap-2 text-black font-black">
                         <Zap size={16} />
                         {entry.score}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-[#64748b] text-sm">
+                    <td className="px-6 py-4 text-black text-sm font-bold">
                       {new Date(entry.date).toLocaleDateString()}
                     </td>
                   </motion.tr>
@@ -221,7 +228,7 @@ export default function LeaderboardPage() {
                 <tr>
                   <td
                     colSpan="5"
-                    className="px-6 py-12 text-center text-[#64748b]"
+                    className="px-6 py-12 text-center text-black font-bold"
                   >
                     No leaderboard data available yet
                   </td>
@@ -237,13 +244,11 @@ export default function LeaderboardPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="p-6 bg-[#6366f1]/10 border border-[#6366f1]/30 rounded-xl"
+        className="p-6 bg-yellow-100 border-4 border-black rounded-lg shadow-[4px_4px_0px_rgba(0,0,0,1)]"
       >
-        <p className="text-[#64748b] text-sm">
-          💡{' '}
-          <span className="text-[#e2e8f0] font-bold">Live data available</span>{' '}
-          after sessions run. Current data shows mock leaderboard for
-          demonstration.
+        <p className="text-black font-bold uppercase">
+          💡 Live data available after sessions run. Current data shows mock
+          leaderboard for demonstration.
         </p>
       </motion.div>
     </div>

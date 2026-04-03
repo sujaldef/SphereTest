@@ -17,6 +17,7 @@ import {
   getStatusBadge,
 } from '../../utils/sessionStateHelper';
 import EditSphereModal from '../../components/EditSphereModal';
+import { GameSectionHeader } from '../../components/GameUI';
 
 export default function MySpheresPage() {
   const { user } = useAuth();
@@ -81,40 +82,43 @@ export default function MySpheresPage() {
   return (
     <div className="w-full p-8">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <h1 className="text-3xl font-black text-[#e2e8f0] mb-6">My Spheres</h1>
+        <GameSectionHeader title="MY SPHERES" />
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-40 bg-[#13131f] rounded-xl border border-[#1e1e2f] animate-pulse"
+                className="h-40 bg-white border-4 border-black rounded-lg animate-pulse shadow-[4px_4px_0px_rgba(0,0,0,1)]"
               ></div>
             ))}
           </div>
         ) : error ? (
-          <div className="p-6 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400">
+          <div className="mt-6 p-6 bg-red-200 border-4 border-red-500 rounded-lg font-bold">
             {error}
           </div>
         ) : spheres.length === 0 ? (
-          <div className="p-12 bg-[#13131f] rounded-xl border border-[#1e1e2f] text-center">
+          <div className="mt-6 p-12 bg-white border-4 border-black rounded-lg shadow-[6px_6px_0px_rgba(0,0,0,1)] text-center">
             <Bookmark
               size={48}
-              className="mx-auto text-[#64748b] opacity-30 mb-4"
+              className="mx-auto text-black opacity-30 mb-4"
             />
-            <p className="text-[#64748b] text-lg">No spheres created yet</p>
-            <p className="text-sm text-[#64748b] mt-2">
+            <p className="text-black font-bold uppercase">
+              No spheres created yet
+            </p>
+            <p className="text-sm text-black font-bold mt-2">
               Create a sphere to get started
             </p>
             <button
               onClick={() => navigate('/dashboard/create')}
-              className="mt-4 px-6 py-2 bg-[#6366f1] text-white rounded-lg font-semibold hover:bg-[#6366f1]/80 transition-all"
+              className="mt-4 px-6 py-2 game-box game-btn-primary"
             >
-              Create Sphere
+              <div className="game-box-shadow" />
+              <div className="game-box-content text-xs">Create Sphere</div>
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
             {spheres.map((sphere) => (
               <SphereCard
                 key={sphere._id}
@@ -147,16 +151,17 @@ function SphereCard({ sphere, onDelete, onEdit, onNavigate, statusBadge }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-5 bg-[#13131f] border border-[#1e1e2f] rounded-xl hover:border-[#6366f1]/50 transition-all space-y-4"
+      whileHover={{ y: -4 }}
+      className="p-6 bg-white border-4 border-black rounded-lg shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] transition-all space-y-4"
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-bold text-[#e2e8f0] line-clamp-2">
+          <h3 className="text-lg font-black text-black line-clamp-2 uppercase">
             {sphere.title}
           </h3>
           <span
-            className={`inline-block mt-2 px-2 py-1 text-xs font-bold rounded ${statusBadge.color}`}
+            className={`inline-block mt-2 px-3 py-1 text-xs font-black rounded-lg border-2 border-black ${statusBadge.color}`}
           >
             {statusBadge.text}
           </span>
@@ -164,20 +169,20 @@ function SphereCard({ sphere, onDelete, onEdit, onNavigate, statusBadge }) {
       </div>
 
       {/* Game Code */}
-      <div className="font-mono bg-[#0a0a0f] px-3 py-2 rounded text-[#6366f1] font-bold text-sm break-all">
+      <div className="font-mono bg-yellow-200 border-2 border-black px-3 py-2 rounded-lg text-black font-black text-sm break-all">
         {sphere.gameCode}
       </div>
 
       {/* Badges & Details */}
-      <div className="space-y-2 text-sm">
+      <div className="space-y-2 text-sm font-bold">
         <div className="flex flex-wrap gap-2">
           {sphere.type && (
-            <span className="px-2 py-1 bg-indigo-500/20 text-indigo-400 rounded text-xs font-semibold">
+            <span className="px-2 py-1 bg-yellow-300 text-black rounded-lg text-xs font-black border border-black">
               {sphere.type.toUpperCase()}
             </span>
           )}
           {sphere.difficulty && (
-            <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-xs font-semibold">
+            <span className="px-2 py-1 bg-purple-200 text-black rounded-lg text-xs font-black border border-black">
               {sphere.difficulty.toUpperCase()}
             </span>
           )}
@@ -185,7 +190,7 @@ function SphereCard({ sphere, onDelete, onEdit, onNavigate, statusBadge }) {
       </div>
 
       {/* Stats */}
-      <div className="flex items-center gap-4 text-[#64748b]">
+      <div className="flex items-center gap-4 text-black font-bold">
         <div className="flex items-center gap-1">
           <Users size={14} />
           <span>
@@ -203,38 +208,54 @@ function SphereCard({ sphere, onDelete, onEdit, onNavigate, statusBadge }) {
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-2 pt-3 border-t border-[#1e1e2f]">
+      <div className="flex gap-2 pt-3 border-t-2 border-black">
         <motion.button
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ y: -2 }}
           onClick={() => onEdit(sphere)}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-orange-500/20 text-orange-400 rounded-lg text-xs font-semibold hover:bg-orange-500/30 transition-all"
+          className="flex-1 game-box game-btn-secondary min-w-0"
         >
-          <Edit3 size={14} /> Edit
+          <div className="game-box-shadow" />
+          <div className="game-box-content">
+            <Edit3 size={14} />
+            EDIT
+          </div>
         </motion.button>
         <motion.button
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ y: -2 }}
           onClick={() =>
             onNavigate(`/dashboard/sphere/${sphere._id}/questions`)
           }
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-[#6366f1]/20 text-[#6366f1] rounded-lg text-xs font-semibold hover:bg-[#6366f1]/30 transition-all"
+          className="flex-1 game-box game-btn-primary min-w-0"
         >
-          <Edit3 size={14} /> Manage
+          <div className="game-box-shadow" />
+          <div className="game-box-content">
+            <Edit3 size={14} />
+            MANAGE
+          </div>
         </motion.button>
         <motion.button
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ y: -2 }}
           onClick={() =>
             onNavigate(`/dashboard/sphere/${sphere._id}/analytics`)
           }
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-500/20 text-green-400 rounded-lg text-xs font-semibold hover:bg-green-500/30 transition-all"
+          className="flex-1 game-box game-btn-secondary min-w-0"
         >
-          <BarChart3 size={14} /> Analytics
+          <div className="game-box-shadow" />
+          <div className="game-box-content">
+            <BarChart3 size={14} />
+            STATS
+          </div>
         </motion.button>
         <motion.button
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ y: -2 }}
           onClick={() => onDelete(sphere._id, sphere.title)}
-          className="flex items-center justify-center px-3 py-2 bg-red-500/20 text-red-400 rounded-lg text-xs font-semibold hover:bg-red-500/30 transition-all"
+          className="flex-1 game-box game-btn-danger min-w-0"
         >
-          <Trash2 size={14} />
+          <div className="game-box-shadow" />
+          <div className="game-box-content">
+            <Trash2 size={14} />
+            DELETE
+          </div>
         </motion.button>
       </div>
     </motion.div>
