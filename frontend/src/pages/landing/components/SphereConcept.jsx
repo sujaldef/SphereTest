@@ -296,7 +296,7 @@ export default function SphereConcept() {
             <FaStar className="text-[#FACC15] text-xl drop-shadow-md" /> +500 XP
           </motion.div>
 
-          {/* Glowing Game Portal Ring Behind Visual */}
+          {/* Glowing Game Portal Ring   Behind Visual */}
           <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
             <div className="w-[300px] h-[300px] border-4 border-dashed border-black rounded-full opacity-20 animate-[spin_20s_linear_infinite]"></div>
           </div>
