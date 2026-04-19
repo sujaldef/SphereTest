@@ -59,7 +59,7 @@ const App = () => {
     <div className="min-h-screen font-sans">
       <BrowserRouter>
         <Routes>
-          {/* PUBLIC ROUTES */}
+          {/* PUBLIC   ROUTES */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
 
