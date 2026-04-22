@@ -49,7 +49,7 @@ import MySpheresPage from './pages/Dashboard/MySpheresPage.jsx';
  *   ⏳ Dashboard pages → Being refactored for consistency
  *
  * NOTES:
- *   - /join is now public (move from /dashboard/join)
+ *   - /join is now public (move    from /dashboard/join)
  *   - Uses DashboardLayout wrapper for protected routes
  *   - Late joins and admin checks enforced at page logic level
  */
