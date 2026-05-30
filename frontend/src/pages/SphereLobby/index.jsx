@@ -13,6 +13,8 @@ import {
 } from '../../utils/sessionStateHelper';
 import SphereLobbyUI from './UI';
 
+const LATE_JOIN_REDIRECT_DELAY = 1500; // ms - time before redirecting late joiners to test
+
 /**
  * SphereLobbyPage - Logic Layer
  *
@@ -31,31 +33,8 @@ import SphereLobbyUI from './UI';
  *   5. Show "waiting for admin" if DRAFT
  *   6. If late join (already ACTIVE): redirect to test
  *
- * APIs USED:
- *   - getSphereById: Fetch full sphere data
- *
- * SOCKETS USED:
- *   - connectSocket: Establish connection
- *   - onSessionStarted: Listen for start event
- *   - join_sphere: Register for real-time updates
- *
- * STATE MANAGED:
- *   - sphere: Full sphere details
- *   - participants: Current participant count
- *   - countdownSeconds: Time until auto-start
- *   - joiningActive: Late join in progress
- *   - autoStarting: Session starting
- *   - loading: Initial load state
- *   - error: Error message
- *
- * ADMIN ONLY:
- *   - canStartSession: Admin can click to start
- *   - Sees "Start Session" button only
- *
- * STUDENT ONLY:
- *   - Sees countdown until start
- *   - Waits for admin to start
- *   - Redirected to test when active
+ * ADMIN: Sees "Start Session" button only
+ * STUDENT: Sees countdown until start, redirected when active
  */
 
 export default function SphereLobbyPage() {
@@ -86,15 +65,13 @@ export default function SphereLobbyPage() {
         setSphere(sphereData);
         setParticipants(sphereData.participants?.length || 0);
 
-        // Connect socket
+        // Connect socket if not already connected
         if (token && !getSocket()) {
           connectSocket(token);
         }
 
         // Listen for session start event
-        onSessionStarted((data) => {
-          console.log('🎬 Session started:', data);
-          // Open test in new tab instead of navigate
+        onSessionStarted(() => {
           window.open(`/dashboard/sphere/${id}/test`, '_blank');
         });
       } catch (err) {
@@ -106,66 +83,52 @@ export default function SphereLobbyPage() {
     };
 
     setupLobby();
-  }, [id, token, navigate]);
+  }, [id, token]);
 
-  // Auto-start countdown logic
+  // Auto-start countdown logic - only for UPCOMING sessions
   useEffect(() => {
-    if (!sphere) return;
+    if (sphere?.sessionStatus !== 'UPCOMING') return;
 
-    // Only show countdown for UPCOMING sessions
-    if (
-      sphere.sessionStatus === 'UPCOMING' ||
-      sphere.sessionStatus === 'DRAFT'
-    ) {
-      const secondsUntilStart = getSecondsUntilAutoStart(sphere);
-      if (secondsUntilStart !== null && secondsUntilStart > 0) {
-        setCountdownSeconds(secondsUntilStart);
+    const secondsUntilStart = getSecondsUntilAutoStart(sphere);
+    if (secondsUntilStart === null || secondsUntilStart <= 0) return;
 
-        // Update countdown every second
-        const checkInterval = setInterval(() => {
-          setCountdownSeconds((prev) => {
-            if (prev <= 1) {
-              console.log('⏰ Session start time reached');
-              clearInterval(checkInterval);
-              return 0;
-            }
-            return prev - 1;
-          });
-        }, 1000);
+    setCountdownSeconds(secondsUntilStart);
 
-        return () => clearInterval(checkInterval);
-      }
-    }
+    // Update countdown every second
+    const checkInterval = setInterval(() => {
+      setCountdownSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(checkInterval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(checkInterval);
   }, [sphere]);
 
   // Late join detection: Redirect if session already active
   useEffect(() => {
-    if (!sphere || joiningActive) return;
-
-    // 🔐 SECURITY: Admin cannot access test as participant
-    if (isAdmin) {
-      console.log('🔐 Admin detected - blocking participant flow');
-      return;
-    }
+    if (!sphere || joiningActive || isAdmin) return;
 
     // Check if session is already active (late join)
-    if (isSessionAlreadyActive(sphere)) {
-      console.log('🟢 Session already active, joining as late participant...');
-      setJoiningActive(true);
+    if (!isSessionAlreadyActive(sphere)) return;
 
-      // Emit join_sphere to register in real-time room
-      const socket = getSocket();
-      if (socket) {
-        socket.emit('join_sphere', id);
-      }
+    setJoiningActive(true);
 
-      // Use window.open() to open test in new tab
-      const redirectTimer = setTimeout(() => {
-        window.open(`/dashboard/sphere/${id}/test`, '_blank');
-      }, 1500);
-
-      return () => clearTimeout(redirectTimer);
+    // Register in real-time room
+    const socket = getSocket();
+    if (socket) {
+      socket.emit('join_sphere', id);
     }
+
+    // Redirect to test in new tab
+    const redirectTimer = setTimeout(() => {
+      window.open(`/dashboard/sphere/${id}/test`, '_blank');
+    }, LATE_JOIN_REDIRECT_DELAY);
+
+    return () => clearTimeout(redirectTimer);
   }, [sphere, joiningActive, id, isAdmin]);
 
   // Admin start session handler

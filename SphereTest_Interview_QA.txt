@@ -1,0 +1,89 @@
+1. What is the purpose of the SphereTest project?
+Answer: SphereTest is a real-time assessment platform where admins create "spheres" (test sessions),
+ add questions, and run live tests for students. It combines REST APIs for core CRUD flows with Socket.io
+  for live session events like start, answer tracking, and leaderboard updates.
+
+2. What problem does this project solve in practical terms?
+Answer: It solves the need for conducting structured, interactive tests with timed sessions, join codes,
+ and real-time visibility. Instead of static quiz forms, it supports live session control and immediate
+  participant progress feedback.
+
+3. What tech stack is used in this project, and why?
+Answer: The backend uses Node.js + Express + MongoDB (Mongoose) for fast API development and flexible
+ schema modeling. The frontend uses React + Vite for a modern, fast UI workflow. Socket.io is used for
+  real-time communication, and JWT is used for stateless authentication.
+
+4. Why was MongoDB a suitable choice for this project?
+Answer: MongoDB fits well because entities like spheres, questions, and users evolve over time and
+ include optional fields (for example, security settings and different question types). Mongoose also
+  provides schema validation, middleware hooks, and easy relation population with ObjectId references.
+
+
+5. How is the backend architecture organized?
+Answer: The backend follows a layered structure: routes map endpoints, controllers handle business
+ logic, models define data schemas, middleware handles cross-cutting concerns like auth/validation,
+  and socket handlers manage real-time events. This separation improves maintainability and testing potential.
+
+6. How does authentication work in SphereTest?
+Answer: Users register/login via `/api/auth`, and successful login returns a JWT. Protected REST
+ routes use an auth middleware that verifies the token and attaches the user to `req.user`. Socket connections are also authenticated by verifying JWT in the connection handshake.
+
+7. What security practices are implemented for user accounts?
+Answer: Passwords are hashed using bcrypt before saving via a Mongoose pre-save hook, so plain 
+text passwords are never stored. JWT-based route protection prevents unauthorized access to protected
+ APIs. Role and ownership checks are also used for sensitive actions like editing/deleting spheres.
+
+8. How does role/permission control work in this project?
+Answer: Access control is enforced mainly through protected endpoints and creator checks. For example,
+ only the sphere creator can update or delete that sphere and modify its questions. The project also
+  includes role fields (`admin`, `student`) and role-check middleware for extensible RBAC.
+
+9. What are the key features implemented in the Sphere module?
+Answer: Core features include sphere creation, auto-generated unique game codes, joining by code,
+ participant limits, scheduling fields (`startTime`, `endTime`, `duration`), session state
+  handling (`DRAFT`, `UPCOMING`, `ACTIVE`, `ENDED`), and security option flags (Face ID/fullscreen/tab-switch detection metadata).
+
+10. How does the project handle real-time test flow?
+Answer: Socket.io rooms are used per sphere. Admin can emit `start_session`, students emit `submit_answer`,
+ and server broadcasts `answer_received`, `progress_update`, `leaderboard_update`, and `session_ended`. This enables synchronized live behavior across all participants in a sphere.
+
+11. How are answers evaluated and scored?
+Answer: The socket handler scores submissions by question type: exact/parsed comparisons for MCQ and BOOL,
+ normalized string comparison with partial credit for TEXT, and simple expected-output matching for CODE. 
+ Scores are aggregated in memory during a session and used to generate rankings.
+
+
+12. What was a likely challenge in this project, and how was it addressed?
+Answer: Session timing and late-join behavior are tricky in live systems. The project addresses this by
+ computing session state from `startTime`/`endTime`/`duration`, rejecting joins for ended sessions, 
+ and storing `actualStartTime` and `sessionStatus` when sessions become active.
+
+13. What frontend design decisions are notable here?
+Answer: The frontend separates logic and UI in several pages (for example, `index.jsx` + `UI.jsx`) to keep
+ components cleaner and easier to refactor. It also centralizes auth state in `AuthContext` and centralizes 
+ API and socket communication in service modules.
+
+14. How does the frontend keep API handling clean and interview-worthy?
+Answer: API calls are wrapped in a shared Axios instance with token injection via request interceptor.
+ A common `getData` helper normalizes backend and network errors into consistent, user-friendly messages, 
+ reducing repetitive try/catch logic in UI pages.
+
+15. What are current scalability limitations?
+Answer: Session answers and leaderboard state are stored in server memory (`Map`), which is simple but not 
+horizontally scalable. In multi-instance deployment, state would diverge across nodes unless moved to shared 
+infrastructure like Redis and coordinated via pub/sub.
+
+16. What performance considerations are present?
+Answer: Using WebSockets reduces repeated polling and improves responsiveness for live updates. Database 
+queries are kept straightforward with indexing opportunities on frequent fields (like `gameCode`, `createdBy`, `sphereId`). 
+However, leaderboard recomputation per submission could be optimized for large sessions.
+
+17. What security or reliability improvements would you propose next?
+Answer: Add rate limiting and stricter validation on all endpoints, rotate/refresh JWTs, and enforce secure
+ cookie/token storage strategy. For reliability, add persistent session state storage, idempotent socket event handling,
+  and stronger audit logging for admin actions.
+
+18. What future scope can be highlighted in interviews?
+Answer: Add automated test evaluation for coding questions using sandboxed execution, richer analytics dashboards,
+ anti-cheat signal processing, test suites for backend/frontend flows, and CI/CD + observability tooling. 
+ These improvements would make SphereTest production-ready for larger cohorts.
